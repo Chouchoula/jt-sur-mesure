@@ -706,6 +706,7 @@ const VIDEO_DEFAULTS = {
 const VIDEO_FIRST_POLL_DELAY_SEC = 6;
 const VIDEO_POLL_INTERVALS = [2, 2, 3, 3, 4, 5, 5];
 const VIDEO_MAX_POLL_ATTEMPTS = 300;
+const VIDEO_INTER_SCENE_DELAY_SEC = 15; // délai entre scènes pour laisser Agnes libérer la queue
 
 const KEYS_STORAGE = 'jt_chatons_studio_keys_v1';
 const PLANNER_STORAGE = 'jt_chatons_planner_v2';
@@ -2169,7 +2170,10 @@ renderVideosGeneric(state.videos,'videos-grid','videos-count');
 for(let i=0;i<scenes.length && !state.stopRequested;i++){
 const scene=scenes[i];
 await generateOneVideo(scene,i,state.script,state.lang,state.videos,'videos-grid','videos-count',0);
-// Pas de sleep : generateOneVideo attend déjà pollVideo (vidéo terminée + URL récupérée)
+if(i<scenes.length-1 && !state.stopRequested){
+setStatus('Pause ' + VIDEO_INTER_SCENE_DELAY_SEC + 's — libération queue Agnes…');
+await sleep(VIDEO_INTER_SCENE_DELAY_SEC * 1000);
+}
 }
 if(state.stopRequested)state.videos.forEach(v=>{if(v.status==='pending'||v.status==='loading')v.status='stopped';});
 renderVideosGeneric(state.videos,'videos-grid','videos-count');
@@ -2337,7 +2341,10 @@ renderVideosGeneric(state.shortsVideos,'shorts-videos-grid','shorts-videos-count
 for(let i=0;i<scenes.length && !state.shortsStopRequested;i++){
 const scene=scenes[i];
 await generateOneShortsVideo(scene,i,0);
-// Pas de sleep : generateOneShortsVideo attend déjà pollVideo (vidéo terminée + URL récupérée)
+if(i<scenes.length-1 && !state.shortsStopRequested){
+setStatus('Pause ' + VIDEO_INTER_SCENE_DELAY_SEC + 's — libération queue Agnes…');
+await sleep(VIDEO_INTER_SCENE_DELAY_SEC * 1000);
+}
 }
 if(state.shortsStopRequested)state.shortsVideos.forEach(v=>{if(v.status==='pending'||v.status==='loading')v.status='stopped';});
 renderVideosGeneric(state.shortsVideos,'shorts-videos-grid','shorts-videos-count');
