@@ -255,6 +255,7 @@ select option{background:var(--bg2);color:var(--ink)}
 <div class="btn-row">
 <button type="button" class="btn" id="api-save-btn">Enregistrer les clés</button>
 <button type="button" class="btn" id="api-diag-btn">🔍 Tester l'API</button>
+<button type="button" class="btn" id="api-test-video-btn">🎬 Test vidéo 10s</button>
 </div>
 <div class="status" id="api-status-line"><span class="dot"></span><span id="api-status-text">Aucune clé API enregistrée</span></div>
 <div class="keys-list" id="api-keys-status"></div>
@@ -817,10 +818,10 @@ function hasActiveKey(){return (BACKEND.proxy && BACKEND.keys>0) || (!BACKEND.pr
 function getReadyKey(){const now=Date.now();const active=state.keyPool.filter(k=>k.active);if(active.length===0)return{key:null,waitMs:0};const ready=active.filter(k=>!k.cooldownUntil||k.cooldownUntil<=now);if(ready.length===0){const soonest=active.reduce((a,b)=>(a.cooldownUntil||0)<(b.cooldownUntil||0)?a:b);return{key:null,waitMs:Math.max(1000,(soonest.cooldownUntil||0)-now)}}ready.sort((a,b)=>(a.lastUsed||0)-(b.lastUsed||0));return{key:ready[0],waitMs:0}}
 async function acquireKey(label){while(true){if(state.stopRequested||state.shortsStopRequested)throw new Error('Arrêt demandé');if(BACKEND.proxy)return null;const{key,waitMs}=getReadyKey();if(key){key.lastUsed=Date.now();return key}if(waitMs===0)throw new Error('Aucune clé API active');await sleep(waitMs)}}
 function renderKeysStatus(){const el=document.getElementById('api-keys-status');if(!el)return;if(BACKEND.proxy){el.innerHTML='<div class="key-row"><span class="key-id">🔐 Clé serveur · '+esc((BACKEND.platform||'relais'))+'</span><span class="key-state">'+(BACKEND.keys>0?'Active':'Absente')+'</span></div>';return}if(state.keyPool.length===0){el.innerHTML='';return}const now=Date.now();el.innerHTML=state.keyPool.map((k,i)=>{let stateHtml='<span class="key-state">Active</span>';if(!k.active)stateHtml='<span class="key-state dead">Inactive</span>';else if(k.cooldownUntil>now){const sec=Math.ceil((k.cooldownUntil-now)/1000);stateHtml='<span class="key-state cool">Cooldown '+sec+'s</span>'}return'<div class="key-row"><span class="key-id">#'+(i+1)+' · '+esc(k.key.slice(0,8))+'…'+esc(k.key.slice(-4))+'</span>'+stateHtml+'</div>'}).join('')}
-function saveKeysFromUI(){if(BACKEND.proxy){showToast('Clé gérée par le serveur (AGNES_API_KEY)','warn',4000);return}const input=document.getElementById('api-keys-input');if(!input)return;const raw=input.value||'';const keys=raw.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);const valid=keys.filter(k=>k.startsWith('sk-'));setStoredKeys(valid);refreshKeyPool();updateApiPanel();if(valid.length===0)showToast('Aucune clé valide','warn');else showToast(valid.length+' clé(s) enregistrée(s) ✓','success')}
+function saveKeysFromUI(){if(BACKEND.proxy){showToast('Clé gérée par le serveur (AGNES_API_KEY)','warn',4000);return}const input=document.getElementById('api-keys-input');if(!input)return;const raw=input.value||'';const keys=raw.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);const valid=keys.filter(k=>k.startsWith('sk-'));setStoredKeys(valid);refreshKeyPool();input.value='';updateApiPanel();if(valid.length===0)showToast('Aucune clé valide','warn');else showToast(valid.length+' clé(s) enregistrée(s) ✓','success')}
 function updateApiPanel(){const panel=document.getElementById('api-panel');const input=document.getElementById('api-keys-input');const line=document.getElementById('api-status-line');const text=document.getElementById('api-status-text');const save=document.getElementById('api-save-btn');const hint=document.getElementById('api-security-hint');if(!panel||!input||!line||!text)return;
 if(BACKEND.proxy){panel.classList.toggle('ok',BACKEND.keys>0);line.classList.toggle('ok',BACKEND.keys>0);text.textContent=BACKEND.keys>0?('Mode sécurisé — '+BACKEND.keys+' clé(s) côté serveur'):'Mode sécurisé — ajoute AGNES_API_KEY dans .env';input.value='';input.disabled=true;input.placeholder='Clé gérée par le serveur (AGNES_API_KEY)';if(save)save.disabled=true;if(hint){hint.style.color=BACKEND.keys>0?'var(--ok)':'var(--warn)';hint.innerHTML=BACKEND.keys>0?('✅ Clé jamais exposée au navigateur. Relais local actif'+(BACKEND.tts?' · narration TTS disponible':' · TTS indisponible sur ce système')+'.'):'⚠️ Relais actif mais aucune clé serveur. Ajoute <code>AGNES_API_KEY=sk-…</code> dans <code>.env</code> puis relance <code>node server.mjs</code>.'}renderKeysStatus();updateButtons();return}
-refreshKeyPool();const n=state.keyPool.length;if(n>0){panel.classList.add('ok');line.classList.add('ok');text.textContent=n+' clé(s) active(s)';input.value=state.keyPool.map(k=>k.key).join('\n');input.placeholder=''}else{panel.classList.remove('ok');line.classList.remove('ok');text.textContent='Aucune clé API enregistrée';input.value='';input.placeholder='Collez vos clés API ici'}if(save)save.disabled=false;if(hint){hint.style.color='var(--warn)';hint.innerHTML='⚠️ Les clés sont stockées dans le navigateur et envoyées directement à Agnes. Pour un SaaS public, lance <code>node server.mjs</code> : la clé reste côté serveur et la narration TTS peut être gravée dans le MP4.'}renderKeysStatus();updateButtons()}
+refreshKeyPool();const n=state.keyPool.length;if(n>0){panel.classList.add('ok');line.classList.add('ok');text.textContent=n+' clé(s) active(s)';input.value='';input.placeholder='Clés enregistrées (masquées) — ne plus afficher'}else{panel.classList.remove('ok');line.classList.remove('ok');text.textContent='Aucune clé API enregistrée';input.value='';input.placeholder='Collez vos clés API ici'}if(save)save.disabled=false;if(hint){hint.style.color='var(--warn)';hint.innerHTML='⚠️ Les clés sont stockées dans le navigateur et envoyées directement à Agnes. Pour un SaaS public, lance <code>node server.mjs</code> : la clé reste côté serveur et la narration TTS peut être gravée dans le MP4.'}renderKeysStatus();updateButtons()}
 
 async function runApiDiagnostic(){
 const btn=document.getElementById('api-diag-btn');
@@ -877,6 +878,64 @@ showToast('Diagnostic échoué — '+String(e.message||e).slice(0,55),'error',60
 }finally{
 if(btn)btn.disabled=false;
 }
+}
+
+async function runTestVideo(){
+if(state.isRunning){showToast('Une génération est déjà en cours','warn');return}
+if(!hasActiveKey()){showToast('Ajoutez au moins une clé API','error');return}
+state.isRunning=true;state.stopRequested=false;
+const btn=document.getElementById('api-test-video-btn');
+if(btn){btn.disabled=true;btn.textContent='⏳ Génération 10s…'}
+setStatus('Test vidéo 10s — envoi à Agnes…');
+try{
+const prompt=buildTestVideoPrompt();
+debugLog('state','TEST-VIDEO','Génération vidéo de test 10s');
+const ref={value:state.workingPollUrlBuilder};
+const videoIdObj=await createVideoTaskWithFallback(prompt,null,10);
+const videoId=videoIdObj.compositeId;
+debugLog('success','TEST-VIDEO','Tâche créée : '+videoId);
+const videoUrl=await pollVideo(videoId,(prog)=>{setStatus('Test vidéo 10s — '+prog)},ref);
+state.workingPollUrlBuilder=ref.value;
+debugLog('success','TEST-VIDEO','Vidéo terminée : '+videoUrl);
+showToast('✅ Vidéo de test 10s générée avec succès !','success',5000);
+setStatus('Test réussi — vidéo prête');
+const a=document.createElement('a');a.href=videoUrl;a.download='test-10s.mp4';a.textContent='Télécharger la vidéo de test';a.target='_blank';
+const container=document.getElementById('api-panel');
+const oldLink=container.querySelector('.test-video-link');
+if(oldLink)oldLink.remove();
+const linkDiv=document.createElement('div');linkDiv.className='test-video-link';linkDiv.style.marginTop='.8rem';
+linkDiv.appendChild(a);container.appendChild(linkDiv);
+}catch(e){
+if(e.message==='Arrêt demandé'){setStatus('Arrêté');showToast('Test arrêté','warn')}
+else{debugLog('error','TEST-VIDEO',e.message);showToast('Échec test vidéo : '+e.message.slice(0,80),'error',6000);setStatus('Test échoué — voir console')}
+}finally{
+state.isRunning=false;
+if(btn){btn.disabled=false;btn.textContent='🎬 Test vidéo 10s'}
+}
+}
+
+function buildTestVideoPrompt(){
+const palette=state.palette||WA_PALETTES[0];
+return[
+'TIKTOK VIRAL CINEMATIC SHORT — 9:16 VERTICAL — WES ANDERSON STYLE, 35MM FILM.',
+'TEST VIDEO — 10 SECONDS — SIMPLE SCENE.',
+'FORMAT: vertical 9:16, 10 seconds, retention-optimized.',
+'CAMERA: perfect bilateral symmetry, dead-center framing.',
+'EDITING: HARD CUTS. 35mm film grain, warm halation.',
+'PALETTE: '+palette.label+' → '+palette.colors.join(', ')+'.',
+'CHARACTERS: CUTE KAWAII HUMANOID KITTEN with retro helmet and pastel outfit.',
+'',
+'SCENE — TEST',
+'DECOR: symmetric pastel Wes Anderson set, centered.',
+'ACTION: kitten looks directly at camera, blinks once, subtle smile.',
+'',
+'MONTAGE — 3 SHOTS:',
+'  SHOT 1 — wide : full body centered, symmetrical background.',
+'  SHOT 2 — medium : waist up, slow dolly-in.',
+'  SHOT 3 — close-up : face centered, eye contact, subtle blink.',
+'',
+'CONSTRAINTS: 35mm grain, hard cuts, symmetry, pastel, no text, vertical 9:16.'
+].join('\n');
 }
 
 function setupNarrationOption(){
@@ -2050,9 +2109,9 @@ state.script=normalized;
 renderScript();
 document.getElementById('section-script').classList.remove('hidden');
 document.getElementById('section-script').classList.add('open');
-setStatus('Étape 2/3 — Vidéos…');
+setStatus('Étape 2/3 — Vidéos (séquentiel pour éviter saturation queue)…');
 document.getElementById('section-videos').classList.remove('hidden');
-const gen=await generateAllVideos();
+const gen=await generateAllVideosSequential();
 result.ok=gen.ok;result.total=gen.total;result.errors=gen.errors;
 debugLog(gen.ok===gen.total?'success':'warn','JT',gen.ok+'/'+gen.total+' scènes générées',gen.errors);
 if(gen.ok>0){
@@ -2095,6 +2154,25 @@ const queue=scenes.map((scene,index)=>({scene,index}));
 const workers=[];
 for(let w=0;w<workerCount;w++)workers.push(videoWorker(w,queue,state.script,state.lang,state.videos,'videos-grid','videos-count'));
 await Promise.all(workers);
+if(state.stopRequested)state.videos.forEach(v=>{if(v.status==='pending'||v.status==='loading')v.status='stopped';});
+renderVideosGeneric(state.videos,'videos-grid','videos-count');
+const ok=state.videos.filter(v=>v.status==='done'&&v.url).length;
+const errors=state.videos.map((v,i)=>v.status==='error'?('Scène '+(i+1)+' : '+(v.error||'erreur inconnue')):null).filter(Boolean);
+return {ok,total:state.videos.length,errors};
+}
+
+async function generateAllVideosSequential(){
+const scenes=(state.script.scenes||[]).slice(0,state.topics.length+2);
+state.videos=[];
+for(let i=0;i<scenes.length;i++)state.videos.push({status:'pending',url:null,type:scenes[i].type||'scene',progress:'En attente…'});
+renderVideosGeneric(state.videos,'videos-grid','videos-count');
+for(let i=0;i<scenes.length && !state.stopRequested;i++){
+const scene=scenes[i];
+await generateOneVideo(scene,i,state.script,state.lang,state.videos,'videos-grid','videos-count',0);
+if(i<scenes.length-1 && !state.stopRequested){
+await sleep(3000);
+}
+}
 if(state.stopRequested)state.videos.forEach(v=>{if(v.status==='pending'||v.status==='loading')v.status='stopped';});
 renderVideosGeneric(state.videos,'videos-grid','videos-count');
 const ok=state.videos.filter(v=>v.status==='done'&&v.url).length;
@@ -2209,9 +2287,9 @@ state.shortsScript=normalized;
 renderShortsScript();
 document.getElementById('section-shorts-script').classList.remove('hidden');
 document.getElementById('section-shorts-script').classList.add('open');
-setStatus('Étape 2/3 — Vidéos Shorts…');
+setStatus('Étape 2/3 — Vidéos Shorts (séquentiel pour éviter saturation queue)…');
 document.getElementById('section-shorts-videos').classList.remove('hidden');
-const gen=await generateShortsVideos();
+const gen=await generateShortsVideosSequential();
 if(state.shortsStopRequested){
 setStatus('Arrêté — '+gen.ok+'/'+gen.total+' scènes prêtes');await sleep(1200);setStatus(null);
 if(gen.ok>0){renderShortsMeta();document.getElementById('section-shorts-meta').classList.remove('hidden');document.getElementById('shorts-assembly-box').classList.remove('hidden');showToast('Shorts arrêté — '+gen.ok+'/'+gen.total+' scènes prêtes','warn',5000);}
@@ -2246,6 +2324,25 @@ const queue=scenes.map((scene,index)=>({scene,index}));
 const workers=[];
 for(let w=0;w<workerCount;w++)workers.push(shortsVideoWorker(w,queue));
 await Promise.all(workers);
+if(state.shortsStopRequested)state.shortsVideos.forEach(v=>{if(v.status==='pending'||v.status==='loading')v.status='stopped';});
+renderVideosGeneric(state.shortsVideos,'shorts-videos-grid','shorts-videos-count');
+const ok=state.shortsVideos.filter(v=>v.status==='done'&&v.url).length;
+const errors=state.shortsVideos.map((v,i)=>v.status==='error'?('Scène '+(i+1)+' : '+(v.error||'erreur inconnue')):null).filter(Boolean);
+return {ok,total:state.shortsVideos.length,errors};
+}
+
+async function generateShortsVideosSequential(){
+const scenes=(state.shortsScript.scenes||[]).slice(0,state.shortsTopics.length+2);
+state.shortsVideos=[];
+for(let i=0;i<scenes.length;i++)state.shortsVideos.push({status:'pending',url:null,type:scenes[i].type||'scene',progress:'En attente…'});
+renderVideosGeneric(state.shortsVideos,'shorts-videos-grid','shorts-videos-count');
+for(let i=0;i<scenes.length && !state.shortsStopRequested;i++){
+const scene=scenes[i];
+await generateOneShortsVideo(scene,i,0);
+if(i<scenes.length-1 && !state.shortsStopRequested){
+await sleep(3000);
+}
+}
 if(state.shortsStopRequested)state.shortsVideos.forEach(v=>{if(v.status==='pending'||v.status==='loading')v.status='stopped';});
 renderVideosGeneric(state.shortsVideos,'shorts-videos-grid','shorts-videos-count');
 const ok=state.shortsVideos.filter(v=>v.status==='done'&&v.url).length;
@@ -2416,6 +2513,7 @@ if(tab.dataset.tab==='shorts'){document.getElementById('shorts-title-input').val
 
 document.getElementById('api-save-btn').addEventListener('click',saveKeysFromUI);
 document.getElementById('api-diag-btn').addEventListener('click',runApiDiagnostic);
+document.getElementById('api-test-video-btn').addEventListener('click',runTestVideo);
 document.getElementById('api-keys-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();saveKeysFromUI()}});
 document.querySelectorAll('[data-toggle]').forEach(h=>{h.addEventListener('click',()=>{const el=document.getElementById(h.dataset.toggle);if(el)el.classList.toggle('open')})});
 
