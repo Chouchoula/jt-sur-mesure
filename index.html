@@ -1,0 +1,2539 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>JT Chatons Studio — Série 30j · FR+EN · Dashboard · YouTube Shorts</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+--bg:#0a0a12;--bg2:#12121c;--bg3:#1a1a28;
+--panel:#16161f;--border:#2a2a3a;
+--ink:#e8e6e0;--dim:#8a8896;--faint:#4a4858;
+--acc:#e5c15a;--acc2:#e87b35;
+--ok:#4a9d6a;--err:#c85a4a;--warn:#d4a017;
+--blue:#4a7bc8;--blue-soft:#6a9be0;
+--purple:#8b5fc4;--purple-soft:#a880d8;
+--r:6px;--fs:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+--fm:ui-monospace,'SF Mono',Menlo,monospace;
+}
+html,body{background:var(--bg)}
+body{font-family:var(--fs);background:var(--bg);color:var(--ink);min-height:100vh;padding:1.2rem 1rem 26rem;font-size:15px;line-height:1.55;max-width:1100px;margin:0 auto}
+header{margin-bottom:1rem;text-align:center;padding:.9rem 0 1rem;position:relative}
+header::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:200px;height:1px;background:linear-gradient(90deg,transparent,var(--acc),transparent);opacity:.5}
+h1{font-size:1.6rem;font-weight:300;margin-bottom:.3rem;background:linear-gradient(135deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.subtitle{font-size:.78rem;color:var(--dim);font-style:italic}
+.tabs{display:flex;gap:.3rem;margin-bottom:1rem;flex-wrap:wrap;background:var(--panel);padding:.4rem;border-radius:var(--r);border:1px solid var(--border)}
+.tab{flex:1;min-width:100px;padding:.65rem .8rem;border-radius:5px;border:1px solid transparent;background:transparent;color:var(--dim);font-size:.76rem;font-weight:600;cursor:pointer;text-align:center;font-family:inherit;transition:all .15s}
+.tab:hover{color:var(--ink)}
+.tab.active{background:rgba(229,193,90,.1);color:var(--acc);border-color:var(--acc)}
+.tab .tab-icon{display:block;font-size:1.1rem;margin-bottom:.15rem}
+.pane{display:none}
+.pane.active{display:block}
+.toast{position:fixed;top:1.2rem;left:50%;transform:translateX(-50%) translateY(-120px);background:var(--bg3);color:var(--ink);border:1px solid var(--border);border-left:3px solid var(--acc);padding:.8rem 1.3rem;border-radius:var(--r);font-size:.82rem;box-shadow:0 8px 32px rgba(0,0,0,.6);z-index:1000;opacity:0;transition:transform .35s cubic-bezier(.2,.9,.3,1.2),opacity .35s;max-width:90vw;text-align:center;display:flex;align-items:center;gap:.5rem}
+.toast.visible{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.success{border-left-color:var(--ok)}.toast.error{border-left-color:var(--err)}.toast.warn{border-left-color:var(--warn)}
+.banner{background:var(--panel);border:1px solid var(--border);border-left:2px solid var(--acc);padding:.9rem 1.1rem;border-radius:var(--r);font-size:.78rem;color:var(--dim);margin-bottom:1rem;line-height:1.55}
+.banner strong{color:var(--ink)}.banner .hl{color:var(--acc)}.banner .hl2{color:var(--blue-soft)}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.1rem;margin-bottom:.9rem}
+.panel.ok{box-shadow:inset 3px 0 0 var(--ok)}
+input[type=password],input[type=text],input[type=number],textarea,select{width:100%;padding:.8rem .9rem;border-radius:var(--r);border:1px solid var(--border);background:var(--bg2);color:var(--ink);font-family:var(--fm);font-size:.78rem;margin-bottom:.5rem}
+textarea{font-family:var(--fs);font-size:.85rem;line-height:1.5;resize:vertical;min-height:70px}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--acc)}
+select{font-family:var(--fs);font-size:.85rem;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23e5c15a' d='M0 0l5 6 5-6z'/></svg>");background-repeat:no-repeat;background-position:right .9rem center;background-size:10px}
+select option{background:var(--bg2);color:var(--ink)}
+.btn{width:100%;padding:.85rem 1.1rem;border-radius:var(--r);border:1px solid var(--border);background:var(--bg2);color:var(--ink);font-size:.82rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;margin-bottom:.6rem;transition:all .2s;font-family:inherit}
+.btn:hover:not(:disabled){background:var(--bg3);border-color:var(--acc)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-primary{border-color:var(--acc);background:linear-gradient(135deg,rgba(232,123,53,.2),rgba(229,193,90,.15));color:var(--acc);font-size:1rem;padding:1.2rem;letter-spacing:.18em}
+.btn-stop{border-color:var(--err);color:var(--err);background:transparent;display:none}
+.btn-stop.visible{display:block}
+.btn-assemble{border-color:var(--ok);background:linear-gradient(135deg,rgba(74,157,106,.2),rgba(74,157,106,.1));color:var(--ok);font-size:.95rem;padding:1.1rem;letter-spacing:.15em}
+.btn-assemble:disabled{opacity:.35;cursor:not-allowed}
+.btn-bilingual{border-color:var(--purple);background:linear-gradient(135deg,rgba(139,95,196,.2),rgba(139,95,196,.1));color:var(--purple-soft);font-size:.95rem;padding:1.1rem;letter-spacing:.15em}
+.btn-bilingual:disabled{opacity:.35;cursor:not-allowed}
+.btn-row{display:flex;gap:.5rem;flex-wrap:wrap}
+.btn-row .btn{margin-bottom:0;flex:1;min-width:130px}
+.ass-option{display:flex;align-items:center;gap:.55rem;font-size:.78rem;color:var(--dim);margin:.2rem 0 .7rem;cursor:pointer;user-select:none}
+.ass-option input{width:16px;height:16px;accent-color:var(--acc);cursor:pointer}
+.ass-option.disabled{opacity:.45;cursor:not-allowed}
+.ass-option.disabled input{cursor:not-allowed}
+.status{font-size:.72rem;padding:.55rem .8rem;border-radius:var(--r);margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem;background:var(--bg2);color:var(--dim);border:1px solid var(--border)}
+.status.ok{background:rgba(74,157,106,.08);color:var(--ok);border-color:rgba(74,157,106,.3)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--faint);flex-shrink:0}
+.status.ok .dot{background:var(--ok);box-shadow:0 0 8px var(--ok)}
+.hint{font-size:.7rem;color:var(--dim);margin-top:.4rem}
+.hint a{color:var(--acc);text-decoration:none}
+.keys-list{margin-top:.6rem}
+.key-row{padding:.35rem .65rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:.3rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem;font-family:var(--fm);font-size:.7rem}
+.key-row .key-id{color:var(--acc);font-weight:600}
+.key-row .key-state{font-size:.6rem;padding:.12rem .45rem;border-radius:2px;background:rgba(74,157,106,.15);color:var(--ok);border:1px solid rgba(74,157,106,.3);letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+.key-row .key-state.cool{background:rgba(212,160,23,.15);color:var(--warn);border-color:rgba(212,160,23,.3)}
+.key-row .key-state.dead{background:rgba(200,90,74,.15);color:var(--err);border-color:rgba(200,90,74,.3)}
+.section{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);margin-bottom:.9rem;overflow:hidden}
+.section.hidden{display:none!important}
+.section-header{padding:.9rem 1.1rem;cursor:pointer;user-select:none;display:flex;justify-content:space-between;align-items:center}
+.section-title{font-size:.8rem;text-transform:uppercase;letter-spacing:.18em;color:var(--ink);font-weight:500;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.badge{display:inline-block;padding:.12rem .5rem;background:transparent;color:var(--acc);border:1px solid var(--border);border-radius:2px;font-size:.58rem;letter-spacing:.12em;font-weight:600}
+.badge.blue{color:var(--blue-soft);border-color:var(--blue)}
+.badge.ok{color:var(--ok);border-color:rgba(74,157,106,.5)}
+.badge.purple{color:var(--purple-soft);border-color:var(--purple)}
+.chevron{font-size:.68rem;color:var(--faint);transition:transform .3s}
+.section.open .chevron{transform:rotate(180deg);color:var(--acc)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.section.open .section-body{max-height:22000px}
+.section-content{padding:0 1.1rem 1.1rem}
+.launcher{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.1rem;margin-bottom:.9rem}
+.launcher-row{display:flex;gap:.6rem;flex-wrap:wrap}
+.launcher-row .btn{margin-bottom:0;flex:1;min-width:140px}
+.planner-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:.4rem;margin:.6rem 0}
+@media(max-width:480px){.planner-grid{grid-template-columns:repeat(5,1fr)}}
+.planner-day{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:.5rem .3rem;text-align:center;cursor:pointer;transition:all .15s;user-select:none}
+.planner-day:hover{border-color:var(--acc);background:var(--bg3)}
+.planner-day.selected{border-color:var(--acc);background:rgba(229,193,90,.08);box-shadow:0 0 0 1px var(--acc)}
+.planner-day.done{border-color:var(--ok);background:rgba(74,157,106,.08)}
+.planner-day.done-both{border-color:var(--purple);background:rgba(139,95,196,.08)}
+.planner-day .pd-num{font-size:.85rem;font-weight:600;color:var(--acc);font-family:var(--fm)}
+.planner-day.done .pd-num,.planner-day.done-both .pd-num{color:var(--ok)}
+.planner-day.done-both .pd-num{color:var(--purple-soft)}
+.planner-day .pd-theme{font-size:.55rem;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;margin-top:.15rem;line-height:1.1}
+.planner-info{background:rgba(74,123,200,.06);border:1px solid var(--blue);border-left:2px solid var(--blue);border-radius:var(--r);padding:.7rem .9rem;margin:.6rem 0;font-size:.76rem;line-height:1.5}
+.planner-info .pi-title{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--blue-soft);font-weight:600;margin-bottom:.3rem}
+.planner-info strong{color:var(--ink)}
+.characters-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.6rem;margin:.6rem 0}
+.char-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:.7rem .8rem;transition:all .15s;cursor:pointer}
+.char-card.selected{border-color:var(--acc);background:rgba(229,193,90,.06)}
+.char-card .cc-name{font-size:.85rem;font-weight:600;color:var(--acc);margin-bottom:.2rem}
+.char-card .cc-role{font-size:.65rem;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem}
+.char-card .cc-desc{font-size:.72rem;color:var(--ink);line-height:1.4}
+.char-card:not(.selected){opacity:.4}
+.lang-toggle{display:flex;gap:.4rem;margin-bottom:.6rem;flex-wrap:wrap}
+.lang-option{flex:1;min-width:120px;padding:.6rem .8rem;border-radius:var(--r);border:1px solid var(--border);background:var(--bg2);color:var(--dim);font-size:.78rem;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;user-select:none}
+.lang-option.selected{border-color:var(--acc);background:rgba(229,193,90,.08);color:var(--acc)}
+.lang-option .lo-flag{font-size:1.2rem;display:block;margin-bottom:.2rem}
+.lang-option .lo-rpm{font-size:.58rem;color:var(--faint);font-weight:400;margin-top:.15rem}
+.lang-option.selected .lo-rpm{color:var(--acc2)}
+.metrics-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;margin:.6rem 0}
+.metric-cell{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:.6rem .8rem;text-align:center}
+.metric-cell .m-val{font-size:1.1rem;font-weight:600;color:var(--acc);font-family:var(--fm)}
+.metric-cell .m-label{font-size:.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin-top:.2rem}
+.metric-cell .m-val.ok{color:var(--ok)}
+.metric-cell .m-val.warn{color:var(--warn)}
+.script-view{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1rem;margin-top:.5rem;font-size:.84rem;line-height:1.65;color:var(--ink);max-height:520px;overflow-y:auto}
+.script-title{font-size:1rem;font-weight:500;color:var(--acc);margin-bottom:.3rem}
+.script-meta{font-size:.7rem;color:var(--faint);font-family:var(--fm);margin-bottom:.8rem;padding-bottom:.6rem;border-bottom:1px dashed var(--border)}
+.script-scene{margin-bottom:.9rem;padding-left:.8rem;border-left:2px solid var(--border)}
+.script-scene .sc-head{font-size:.74rem;color:var(--acc);font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem}
+.script-scene .sc-line{margin-bottom:.2rem;font-size:.8rem}
+.script-scene .sc-label{display:inline-block;min-width:72px;color:var(--faint);font-size:.68rem;text-transform:uppercase;letter-spacing:.08em}
+.script-scene .sc-dialogue{color:#f0d78a;font-style:italic}
+.videos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.9rem;margin-top:.7rem}
+.scene-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:border-color .3s;display:flex;flex-direction:column}
+.scene-card.generating{border-color:var(--acc)}
+.scene-card.done{border-color:var(--ok)}
+.scene-card.error{border-color:var(--err)}
+.scene-card-header{padding:.5rem .7rem;font-size:.68rem;font-family:var(--fm);color:var(--dim);display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);gap:.5rem}
+.scene-card-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.scene-card-body{padding:.6rem}
+.scene-card-body video{width:100%;border-radius:2px;background:#000;display:block}
+.scene-placeholder{width:100%;aspect-ratio:9/16;background:#0a0a12;border-radius:2px;display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:.68rem;font-family:var(--fm);flex-direction:column;gap:.4rem;text-align:center;padding:.5rem}
+.scene-download{display:block;margin-top:.4rem;font-size:.68rem;color:var(--acc);text-decoration:none;text-align:center;padding:.35rem;border:1px solid var(--border);border-radius:3px}
+.scene-download:hover{background:rgba(229,193,90,.08);border-color:var(--acc)}
+.spinner-mini{width:12px;height:12px;border:2px solid rgba(229,193,90,.2);border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.player-overlay{position:fixed;inset:0;background:#000;z-index:2000;display:none;align-items:center;justify-content:center;cursor:pointer}
+.player-overlay.visible{display:flex}
+#player-canvas{display:block;max-width:100vw;max-height:100vh;background:#000}
+.player-hint{position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.55);font-size:.72rem;font-family:var(--fm);letter-spacing:.12em;text-transform:uppercase;pointer-events:none;opacity:1;transition:opacity .5s;text-align:center;background:rgba(0,0,0,.4);padding:.3rem .7rem;border-radius:3px}
+.player-hint.hidden{opacity:0}
+.player-controls{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:.9rem 1rem;margin-top:.5rem}
+.player-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem}
+.player-row .btn{margin-bottom:0;flex:1;min-width:130px}
+.assembly-box{background:rgba(74,157,106,.05);border:1px solid var(--border);border-left:2px solid var(--ok);border-radius:var(--r);padding:1rem 1.1rem;margin-bottom:.9rem}
+.assembly-box .ass-title{font-size:.8rem;text-transform:uppercase;letter-spacing:.15em;color:var(--ok);font-weight:600;margin-bottom:.5rem}
+.assembly-box .ass-desc{font-size:.75rem;color:var(--dim);line-height:1.55;margin-bottom:.7rem}
+.assembly-box .ass-status{font-size:.72rem;font-family:var(--fm);color:var(--dim);padding:.5rem .7rem;background:var(--bg2);border-radius:var(--r);border:1px solid var(--border);margin-bottom:.6rem;display:none}
+.assembly-box .ass-status.visible{display:block}
+.assembly-box .ass-status.ok{color:var(--ok);border-color:rgba(74,157,106,.3)}
+.assembly-box .ass-status.err{color:var(--err);border-color:rgba(200,90,74,.3)}
+.assembly-box .ass-progress{width:100%;height:6px;background:var(--bg2);border-radius:3px;overflow:hidden;margin-bottom:.6rem;display:none}
+.assembly-box .ass-progress.visible{display:block}
+.assembly-box .ass-progress-fill{height:100%;background:linear-gradient(90deg,var(--acc2),var(--acc));width:0%;transition:width .3s;border-radius:3px}
+.assembly-box .ass-download{display:none;margin-top:.6rem}
+.assembly-box .ass-download.visible{display:block}
+.assembly-box .ass-download a{display:block;text-align:center;padding:.9rem;border-radius:var(--r);border:1px solid var(--ok);background:rgba(74,157,106,.12);color:var(--ok);text-decoration:none;font-weight:600;font-size:.85rem;letter-spacing:.1em}
+.assembly-box .ass-download a:hover{background:rgba(74,157,106,.2)}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.7rem;margin:.7rem 0}
+.dash-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:.9rem 1rem;position:relative}
+.dash-card .dc-label{font-size:.65rem;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:.3rem}
+.dash-card .dc-value{font-size:1.5rem;font-weight:600;color:var(--acc);font-family:var(--fm);line-height:1.1}
+.dash-card .dc-value.ok{color:var(--ok)}
+.dash-card .dc-value.blue{color:var(--blue-soft)}
+.dash-card .dc-value.purple{color:var(--purple-soft)}
+.dash-card .dc-sub{font-size:.68rem;color:var(--faint);margin-top:.2rem;font-family:var(--fm)}
+.dash-chart{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1rem;margin:.7rem 0}
+.dash-chart .dchart-title{font-size:.72rem;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:.6rem}
+.dash-bars{display:flex;align-items:flex-end;gap:2px;height:120px;border-bottom:1px solid var(--border);padding-bottom:.3rem}
+.dash-bar{flex:1;min-width:6px;background:linear-gradient(180deg,var(--acc2),var(--acc));border-radius:2px 2px 0 0;position:relative;transition:all .2s;cursor:pointer}
+.dash-bar:hover{filter:brightness(1.2)}
+.dash-bar.empty{background:var(--faint);opacity:.3}
+.dash-bar.selected{filter:brightness(1.35);outline:1px solid var(--acc);outline-offset:1px}
+.dash-bar-label{position:absolute;bottom:-1.1rem;left:50%;transform:translateX(-50%);font-size:.55rem;color:var(--faint);font-family:var(--fm);white-space:nowrap}
+.dash-inputs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin:.7rem 0}
+@media(max-width:600px){.dash-inputs{grid-template-columns:1fr}}
+.dash-input-cell{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:.6rem .7rem}
+.dash-input-cell .dic-label{font-size:.65rem;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:.3rem;display:block}
+.dash-input-cell input{width:100%;padding:.5rem .6rem;border-radius:4px;border:1px solid var(--border);background:var(--bg);color:var(--ink);font-family:var(--fm);font-size:.8rem}
+.dash-input-cell input:focus{outline:none;border-color:var(--acc)}
+.dash-table{width:100%;border-collapse:collapse;font-size:.74rem;margin-top:.6rem}
+.dash-table th{text-align:left;padding:.45rem .5rem;background:var(--bg3);color:var(--dim);font-weight:600;text-transform:uppercase;letter-spacing:.06em;font-size:.62rem;border-bottom:1px solid var(--border)}
+.dash-table td{padding:.5rem .5rem;border-bottom:1px solid var(--border);color:var(--ink)}
+.dash-table tr:hover td{background:rgba(229,193,90,.03)}
+.dash-table .num{font-family:var(--fm);text-align:right}
+.dash-table .day-cell{color:var(--acc);font-weight:600}
+.dash-rpm-info{background:rgba(139,95,196,.06);border:1px solid var(--purple);border-left:2px solid var(--purple);border-radius:var(--r);padding:.7rem .9rem;font-size:.74rem;line-height:1.5;color:var(--dim);margin:.7rem 0}
+.dash-rpm-info strong{color:var(--ink)}
+.dash-rpm-info .rpm-title{font-size:.65rem;color:var(--purple-soft);text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:.3rem}
+.shorts-meta{background:rgba(232,123,53,.06);border:1px solid var(--acc2);border-left:2px solid var(--acc2);border-radius:var(--r);padding:.8rem 1rem;margin:.6rem 0;font-size:.76rem;line-height:1.55}
+.shorts-meta .sm-title{font-size:.7rem;color:var(--acc2);text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:.4rem}
+.shorts-meta .sm-field{margin-bottom:.3rem}
+.shorts-meta .sm-field strong{color:var(--ink);display:inline-block;min-width:80px}
+.shorts-meta .sm-field .sm-val{color:var(--dim);font-family:var(--fm);font-size:.72rem}
+.status-bar{position:fixed;bottom:200px;left:0;right:0;background:var(--bg3);border-top:1px solid var(--border);color:var(--ink);padding:.65rem 1rem;font-size:.74rem;display:flex;align-items:center;gap:.6rem;transform:translateY(200%);transition:transform .35s cubic-bezier(.2,.9,.3,1);z-index:150;font-family:var(--fm);box-shadow:0 -4px 20px rgba(0,0,0,.4)}
+.status-bar.visible{transform:translateY(0)}
+.spinner{width:11px;height:11px;border:2px solid rgba(229,193,90,.2);border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+.debug-panel{position:fixed;bottom:0;left:0;right:0;height:180px;background:#05050a;border-top:2px solid var(--acc);z-index:200;display:flex;flex-direction:column;font-family:var(--fm);box-shadow:0 -8px 32px rgba(0,0,0,.7);transition:height .3s ease}
+.debug-panel.collapsed{height:36px}
+.debug-header{display:flex;justify-content:space-between;align-items:center;padding:.35rem .6rem;background:linear-gradient(90deg,#0f0f18,#1a1a28);border-bottom:1px solid var(--border);flex-shrink:0;user-select:none}
+.debug-title{font-size:.7rem;color:var(--acc);letter-spacing:.12em;text-transform:uppercase;font-weight:600;display:flex;align-items:center;gap:.4rem}
+.debug-badge{font-size:.58rem;padding:.08rem .35rem;background:var(--acc);color:var(--bg);border-radius:2px;font-weight:700}
+.debug-actions{display:flex;gap:.25rem}
+.debug-actions button{background:transparent;border:1px solid var(--border);color:var(--dim);font-size:.6rem;padding:.22rem .5rem;border-radius:2px;cursor:pointer;font-family:inherit}
+.debug-actions button:hover{color:var(--acc);border-color:var(--acc)}
+.debug-body{flex:1;overflow-y:auto;padding:.5rem .7rem .8rem;font-size:.7rem;line-height:1.45;color:#c8c8d0}
+.debug-entry{margin-bottom:.25rem;padding:.2rem .35rem;border-left:2px solid transparent;border-radius:2px;word-break:break-word}
+.debug-entry.info{border-left-color:var(--faint)}
+.debug-entry.success{border-left-color:var(--ok);background:rgba(74,157,106,.04)}
+.debug-entry.warn{border-left-color:var(--warn);background:rgba(212,160,23,.04)}
+.debug-entry.error{border-left-color:var(--err);background:rgba(200,90,74,.06);color:#f0a0a0}
+.debug-entry.api{border-left-color:var(--acc)}
+.debug-entry.response{border-left-color:var(--acc2)}
+.debug-time{color:var(--faint);margin-right:.4rem;font-size:.62rem}
+.debug-cat{color:var(--acc);font-weight:600;margin-right:.35rem;font-size:.62rem}
+.debug-msg{color:#d8d8e0}
+.debug-data{margin-top:.25rem;padding:.35rem .45rem;background:#0a0a12;border:1px solid var(--border);border-radius:2px;font-size:.65rem;color:#a8d8b0;max-height:140px;overflow:auto;white-space:pre-wrap;word-break:break-all;line-height:1.4}
+.hidden{display:none!important}
+.voice-toggle{display:flex;align-items:center;gap:.5rem;margin-top:.5rem;font-size:.72rem;color:var(--dim)}
+.voice-toggle input{width:auto;margin:0;accent-color:var(--acc)}
+.preview-box{background:rgba(232,123,53,.05);border:1px solid var(--border);border-left:2px solid var(--acc2);border-radius:var(--r);padding:.8rem 1rem;margin:.5rem 0;font-size:.78rem;line-height:1.55}
+.preview-box strong{color:var(--acc2)}
+@media(max-width:480px){h1{font-size:1.3rem}.videos-grid{grid-template-columns:1fr}body{padding-bottom:28rem}.debug-panel{height:170px}.status-bar{bottom:180px}.metrics-row{grid-template-columns:1fr}.dash-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<header>
+<h1>JT Chatons Studio</h1>
+<p class="subtitle">Série 30 jours · FR + EN · Dashboard · YouTube Shorts</p>
+</header>
+
+<div class="tabs">
+<button class="tab active" data-tab="studio"><span class="tab-icon">🎬</span>Studio</button>
+<button class="tab" data-tab="dashboard"><span class="tab-icon">📊</span>Dashboard</button>
+<button class="tab" data-tab="shorts"><span class="tab-icon">📱</span>YouTube Shorts</button>
+</div>
+
+<div class="pane active" id="pane-studio">
+
+<div class="banner">
+<strong>Studio de production.</strong> Planificateur 30 jours, personnages récurrents, génération FR ou EN (ou les deux en un clic). Chaque épisode est conçu pour dépasser 1 minute et être éligible au Creator Rewards TikTok.
+</div>
+
+<div class="panel" id="api-panel">
+<label style="display:block;font-size:.7rem;color:var(--dim);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.12em;font-weight:600;">Clés API Agnes — une par ligne</label>
+<textarea id="api-keys-input" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx" rows="2" spellcheck="false" autocomplete="off"></textarea>
+<div class="btn-row">
+<button type="button" class="btn" id="api-save-btn">Enregistrer les clés</button>
+<button type="button" class="btn" id="api-diag-btn">🔍 Tester l'API</button>
+</div>
+<div class="status" id="api-status-line"><span class="dot"></span><span id="api-status-text">Aucune clé API enregistrée</span></div>
+<div class="keys-list" id="api-keys-status"></div>
+<div class="hint">Clés gratuites sur <a href="https://platform.agnes-ai.com" target="_blank">platform.agnes-ai.com</a></div>
+<div class="hint" id="api-security-hint" style="color:var(--warn);">⚠️ Les clés sont stockées dans le navigateur et envoyées directement à Agnes. Pour un SaaS public, lance <code>node server.mjs</code> : la clé reste côté serveur et la narration TTS peut être gravée dans le MP4.</div>
+</div>
+
+<div class="section open" id="section-planner">
+<div class="section-header" data-toggle="section-planner">
+<span class="section-title">📅 Planificateur 30 jours <span class="badge" id="planner-badge">Jour 1</span></span>
+<span class="chevron">▼</span>
+</div>
+<div class="section-body"><div class="section-content">
+<div class="hint" style="margin-bottom:.5rem;">Clique sur un jour pour charger son thème, ses sujets et ses personnages. Vert = FR fait · Violet = FR + EN faits.</div>
+<div class="planner-grid" id="planner-grid"></div>
+<div class="planner-info" id="planner-info"></div>
+</div></div>
+</div>
+
+<div class="section open" id="section-characters">
+<div class="section-header" data-toggle="section-characters">
+<span class="section-title">🐱 Personnages récurrents <span class="badge" id="chars-badge">—</span></span>
+<span class="chevron">▼</span>
+</div>
+<div class="section-body"><div class="section-content">
+<div class="hint" style="margin-bottom:.5rem;">Clique pour sélectionner/désélectionner. Les personnages sélectionnés apparaîtront dans l'épisode.</div>
+<div class="characters-grid" id="characters-grid"></div>
+</div></div>
+</div>
+
+<div class="section open" id="section-metrics">
+<div class="section-header" data-toggle="section-metrics">
+<span class="section-title">📊 Métriques de l'épisode</span>
+<span class="chevron">▼</span>
+</div>
+<div class="section-body"><div class="section-content">
+<div class="metrics-row">
+<div class="metric-cell"><div class="m-val" id="metric-duration">—</div><div class="m-label">Durée</div></div>
+<div class="metric-cell"><div class="m-val" id="metric-scenes">—</div><div class="m-label">Scènes</div></div>
+<div class="metric-cell"><div class="m-val" id="metric-eligible">—</div><div class="m-label">Éligible 1min+</div></div>
+</div>
+<div class="hint" id="eligibility-hint"></div>
+</div></div>
+</div>
+
+<div class="section open" id="section-form">
+<div class="section-header" data-toggle="section-form">
+<span class="section-title">🎬 Paramètres de l'épisode</span>
+<span class="chevron">▼</span>
+</div>
+<div class="section-body"><div class="section-content">
+<div class="preview-box" id="form-preview"></div>
+
+<div style="margin-bottom:.6rem;">
+<label style="display:block;font-size:.7rem;color:var(--dim);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.1em;font-weight:600;">Langue</label>
+<div class="lang-toggle" id="lang-toggle">
+<div class="lang-option selected" data-lang="fr"><span class="lo-flag">🇫🇷</span>Français<div class="lo-rpm">RPM ~0,30–0,60 €</div></div>
+<div class="lang-option" data-lang="en"><span class="lo-flag">🇺🇸</span>English<div class="lo-rpm">RPM ~1,50–3,00 $</div></div>
+</div>
+</div>
+
+<div style="margin-bottom:.6rem;">
+<label style="display:block;font-size:.7rem;color:var(--dim);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.1em;font-weight:600;">Thème du jour</label>
+<select id="jt-theme">
+<option value="drama">💔 Drame sentimental</option>
+<option value="mystere">🔍 Mystère</option>
+<option value="comedie">😂 Comédie absurde</option>
+<option value="aventure">🗺️ Aventure</option>
+<option value="quotidien">☕ Quotidien</option>
+<option value="revue">📰 Revue parodique</option>
+</select>
+</div>
+
+<div style="margin-bottom:.6rem;">
+<label style="display:block;font-size:.7rem;color:var(--dim);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.1em;font-weight:600;">Titre</label>
+<input type="text" id="jt-title-input">
+</div>
+
+<div style="margin-bottom:.6rem;">
+<label style="display:block;font-size:.7rem;color:var(--dim);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.1em;font-weight:600;">Sujets (un par ligne)</label>
+<textarea id="jt-topics-input" rows="6"></textarea>
+<div class="hint">💡 5 sujets = ~56s · 6 sujets = ~64s (éligible) · 8 sujets = ~80s</div>
+</div>
+
+<div style="margin-bottom:.6rem;">
+<label style="display:block;font-size:.7rem;color:var(--dim);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.1em;font-weight:600;">Palette</label>
+<select id="jt-palette">
+<option value="pink-mint">🌸 Rose poudré & Menthe</option>
+<option value="coral-teal">🪸 Corail & Turquoise</option>
+<option value="mustard-blue">🌟 Moutarde & Bleu ciel</option>
+<option value="lavender">💜 Lavande & Ocre</option>
+<option value="sage-blush">🌿 Sauge & Blush</option>
+<option value="ochre-rose">🍂 Ocre & Rose fané</option>
+</select>
+</div>
+
+<div style="margin-bottom:.6rem;">
+<label style="display:block;font-size:.7rem;color:var(--dim);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.1em;font-weight:600;">Durée par scène</label>
+<select id="jt-scene-duration">
+<option value="5">5 secondes</option>
+<option value="8">8 secondes</option>
+<option value="10" selected>10 secondes</option>
+</select>
+</div>
+
+</div></div>
+</div>
+
+<div class="launcher">
+<div class="launcher-row" style="margin-bottom:.6rem;">
+<button type="button" class="btn btn-primary" id="launch-btn" disabled>▶ Générer l'épisode</button>
+<button type="button" class="btn btn-stop" id="stop-btn">⏹ Arrêter</button>
+</div>
+<div class="launcher-row">
+<button type="button" class="btn btn-bilingual" id="launch-bilingual-btn" disabled>🌐 Générer FR + EN (2 épisodes)</button>
+</div>
+</div>
+
+<div class="section hidden" id="section-script">
+<div class="section-header" data-toggle="section-script">
+<span class="section-title">📜 Scénario <span class="badge" id="script-badge">—</span></span>
+<span class="chevron">▼</span>
+</div>
+<div class="section-body"><div class="section-content">
+<div class="script-view" id="script-view">Le scénario apparaîtra ici…</div>
+</div></div>
+</div>
+
+<div class="section hidden" id="section-videos">
+<div class="section-header" data-toggle="section-videos">
+<span class="section-title">🎞️ Scènes <span class="badge" id="videos-count">0</span></span>
+<span class="chevron">▼</span>
+</div>
+<div class="section-body"><div class="section-content">
+<div class="videos-grid" id="videos-grid"></div>
+</div></div>
+</div>
+
+<div class="assembly-box hidden" id="assembly-box">
+<div class="ass-title">🎬 Assemblage MP4</div>
+<div class="ass-desc">Fusionne les scènes en un MP4 unique prêt pour TikTok ou YouTube Shorts.</div>
+<label class="ass-option" id="include-narration-label"><input type="checkbox" id="include-narration"> <span>🔊 Graver la narration TTS dans le MP4</span></label>
+<div class="ass-status" id="ass-status"></div>
+<div class="ass-progress" id="ass-progress"><div class="ass-progress-fill" id="ass-progress-fill"></div></div>
+<button type="button" class="btn btn-assemble" id="assemble-btn" disabled>🎬 Assembler l'épisode</button>
+<div class="ass-download" id="ass-download">
+<a id="ass-download-link" download="jt-chatons.mp4">⬇ Télécharger l'épisode</a>
+</div>
+</div>
+
+<div class="section hidden" id="section-player">
+<div class="section-header" data-toggle="section-player">
+<span class="section-title">▶ Prévisualisation <span class="badge" id="player-badge">0</span></span>
+<span class="chevron">▼</span>
+</div>
+<div class="section-body"><div class="section-content">
+<div class="player-controls">
+<div class="player-row">
+<button type="button" class="btn" id="play-film-btn" disabled>▶ Prévisualiser</button>
+<button type="button" class="btn" id="replay-btn" disabled>🔁 Rejouer</button>
+</div>
+<div class="voice-toggle">
+<input type="checkbox" id="voice-toggle" checked>
+<label for="voice-toggle">Narration vocale</label>
+</div>
+</div>
+</div></div>
+</div>
+
+</div>
+
+<div class="pane" id="pane-dashboard">
+
+<div class="banner">
+<strong>Dashboard de suivi.</strong> Saisis les vues réelles de chaque épisode après publication. Le dashboard calcule les revenus estimés par plateforme selon le RPM de chaque marché. Clique sur un jour pour saisir ses vues.
+</div>
+
+<div class="dash-grid" id="dash-cards">
+<div class="dash-card"><div class="dc-label">Jours complétés</div><div class="dc-value" id="dc-days">0/30</div><div class="dc-sub" id="dc-days-sub">0%</div></div>
+<div class="dash-card"><div class="dc-label">Vues TikTok totales</div><div class="dc-value blue" id="dc-views-tiktok">0</div><div class="dc-sub" id="dc-views-tiktok-sub">—</div></div>
+<div class="dash-card"><div class="dc-label">Vues YouTube Shorts</div><div class="dc-value blue" id="dc-views-shorts">0</div><div class="dc-sub" id="dc-views-shorts-sub">—</div></div>
+<div class="dash-card"><div class="dc-label">Revenus TikTok FR</div><div class="dc-value" id="dc-rev-fr">0 €</div><div class="dc-sub">RPM 0,45 €</div></div>
+<div class="dash-card"><div class="dc-label">Revenus TikTok US</div><div class="dc-value ok" id="dc-rev-us">0 $</div><div class="dc-sub">RPM 2,25 $</div></div>
+<div class="dash-card"><div class="dc-label">Revenus Shorts</div><div class="dc-value purple" id="dc-rev-shorts">0 $</div><div class="dc-sub">RPM 0,15 $</div></div>
+<div class="dash-card" style="grid-column:1/-1"><div class="dc-label">Revenus totaux estimés (convertis en €)</div><div class="dc-value ok" id="dc-rev-total">0 €</div><div class="dc-sub" id="dc-rev-total-sub">Somme pondérée par RPM</div></div>
+</div>
+
+<div class="dash-chart">
+<div class="dchart-title">Vues par jour (TikTok)</div>
+<div class="dash-bars" id="dash-bars"></div>
+<div style="display:flex;justify-content:space-between;font-size:.6rem;color:var(--faint);font-family:var(--fm);margin-top:1.4rem;"><span>J1</span><span>J10</span><span>J20</span><span>J30</span></div>
+</div>
+
+<div class="dash-rpm-info">
+<div class="rpm-title">💡 RPM utilisés pour l'estimation</div>
+<div><strong>TikTok FR</strong> : 0,45 € / 1000 vues · <strong>TikTok US</strong> : 2,25 $ / 1000 vues · <strong>YouTube Shorts</strong> : 0,15 $ / 1000 vues</div>
+<div style="margin-top:.3rem;font-size:.7rem;">Taux de conversion utilisé : 1 $ = 0,92 €. Ces RPM sont des moyennes observées en 2026. Ton RPM réel dépendra de ton audience et de la niche.</div>
+</div>
+
+<div class="section open" id="section-input">
+<div class="section-header" data-toggle="section-input">
+<span class="section-title">✏️ Saisir les vues de l'épisode <span class="badge" id="input-badge">Jour 1</span></span>
+<span class="chevron">▼</span>
+</div>
+<div class="section-body"><div class="section-content">
+<div class="hint" style="margin-bottom:.5rem;">Saisis les vues réelles de chaque plateforme pour le jour sélectionné.</div>
+<div class="dash-inputs">
+<div class="dash-input-cell">
+<label class="dic-label">🇫🇷 TikTok FR (vues)</label>
+<input type="number" id="input-tiktok-fr" placeholder="0" min="0">
+</div>
+<div class="dash-input-cell">
+<label class="dic-label">🇺🇸 TikTok US (vues)</label>
+<input type="number" id="input-tiktok-us" placeholder="0" min="0">
+</div>
+<div class="dash-input-cell">
+<label class="dic-label">📱 YouTube Shorts (vues)</label>
+<input type="number" id="input-shorts" placeholder="0" min="0">
+</div>
+</div>
+<button type="button" class="btn" id="save-views-btn" style="margin-top:.4rem;">💾 Enregistrer les vues du jour</button>
+</div></div>
+</div>
+
+<div class="section open" id="section-table">
+<div class="section-header" data-toggle="section-table">
+<span class="section-title">📋 Détail par jour <span class="badge" id="table-badge">0 jours</span></span>
+<span class="chevron">▼</span>
+</div>
+<div class="section-body"><div class="section-content">
+<table class="dash-table" id="dash-table">
+<thead><tr><th>Jour</th><th style="text-align:right">TikTok FR</th><th style="text-align:right">TikTok US</th><th style="text-align:right">Shorts</th><th style="text-align:right">Revenus</th></tr></thead>
+<tbody id="dash-table-body"><tr><td colspan="5" style="text-align:center;color:var(--faint);padding:1.5rem;">Aucune donnée saisie. Clique sur un jour pour commencer.</td></tr></tbody>
+</table>
+</div></div>
+</div>
+
+<button type="button" class="btn" id="reset-dashboard-btn" style="margin-top:.6rem;border-color:var(--err);color:var(--err);">🗑 Réinitialiser le dashboard</button>
+
+</div>
+
+<div class="pane" id="pane-shorts">
+
+<div class="banner">
+<strong>Générateur YouTube Shorts.</strong> Format optimisé pour YouTube : 60 secondes max, hook dès la première seconde, boucle parfaite en fin de vidéo, titre et description SEO prêts à copier-coller.
+</div>
+
+<div class="section open" id="section-shorts-config">
+<div class="section-header" data-toggle="section-shorts-config">
+<span class="section-title">⚙️ Configuration Shorts</span>
+<span class="chevron">▼</span>
+</div>
+<div class="section-body"><div class="section-content">
+<div style="margin-bottom:.6rem;">
+<label style="display:block;font-size:.7rem;color:var(--dim);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.1em;font-weight:600;">Thème</label>
+<select id="shorts-theme">
+<option value="drama">💔 Drame sentimental</option>
+<option value="mystere">🔍 Mystère</option>
+<option value="comedie">😂 Comédie absurde</option>
+<option value="aventure">🗺️ Aventure</option>
+<option value="quotidien">☕ Quotidien</option>
+<option value="revue">📰 Revue parodique</option>
+</select>
+</div>
+<div style="margin-bottom:.6rem;">
+<label style="display:block;font-size:.7rem;color:var(--dim);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.1em;font-weight:600;">Sujets (3 à 5 max pour rester sous 60s)</label>
+<textarea id="shorts-topics-input" rows="4">Marcel discovers a mysterious letter in his mailbox
+Louna thinks it's from an old friend
+The letter reveals a hidden treasure map
+They decide to follow the clues tomorrow</textarea>
+<div class="hint">💡 YouTube Shorts : 60s max. 5 sujets × 8s + 2 plateaux × 8s = 56s (dans la limite). 3 sujets = 40s (idéal).</div>
+</div>
+<div style="margin-bottom:.6rem;">
+<label style="display:block;font-size:.7rem;color:var(--dim);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.1em;font-weight:600;">Langue des Shorts</label>
+<div class="lang-toggle" id="shorts-lang-toggle">
+<div class="lang-option selected" data-lang="en"><span class="lo-flag">🇺🇸</span>English<div class="lo-rpm">Marché US · RPM 0,15 $</div></div>
+<div class="lang-option" data-lang="fr"><span class="lo-flag">🇫🇷</span>Français<div class="lo-rpm">Marché FR · RPM 0,10 €</div></div>
+</div>
+</div>
+<div style="margin-bottom:.6rem;">
+<label style="display:block;font-size:.7rem;color:var(--dim);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.1em;font-weight:600;">Titre YouTube (SEO)</label>
+<input type="text" id="shorts-title-input" value="Marcel's Secret Letter 📮 | Cat Animation Shorts">
+</div>
+<div style="margin-bottom:.6rem;">
+<label style="display:block;font-size:.7rem;color:var(--dim);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.1em;font-weight:600;">Description YouTube</label>
+<textarea id="shorts-desc-input" rows="3">Marcel finds a mysterious letter in his mailbox. What does it contain? Watch till the end!
+#Shorts #CatAnimation #AIgenerated #WesAnderson</textarea>
+</div>
+<div style="margin-bottom:.6rem;">
+<label style="display:block;font-size:.7rem;color:var(--dim);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.1em;font-weight:600;">Durée par scène</label>
+<select id="shorts-scene-duration">
+<option value="5">5 secondes</option>
+<option value="8" selected>8 secondes</option>
+</select>
+</div>
+</div></div>
+</div>
+
+<div class="launcher">
+<div class="launcher-row">
+<button type="button" class="btn btn-primary" id="shorts-launch-btn" disabled>▶ Générer le Short</button>
+<button type="button" class="btn btn-stop" id="shorts-stop-btn">⏹ Arrêter</button>
+</div>
+</div>
+
+<div class="section hidden" id="section-shorts-meta">
+<div class="section-header" data-toggle="section-shorts-meta">
+<span class="section-title">📋 Métadonnées YouTube prêtes à copier</span>
+<span class="chevron">▼</span>
+</div>
+<div class="section-body"><div class="section-content">
+<div class="shorts-meta" id="shorts-meta-content"></div>
+</div></div>
+</div>
+
+<div class="section hidden" id="section-shorts-script">
+<div class="section-header" data-toggle="section-shorts-script">
+<span class="section-title">📜 Scénario Shorts <span class="badge" id="shorts-script-badge">—</span></span>
+<span class="chevron">▼</span>
+</div>
+<div class="section-body"><div class="section-content">
+<div class="script-view" id="shorts-script-view">Le scénario Shorts apparaîtra ici…</div>
+</div></div>
+</div>
+
+<div class="section hidden" id="section-shorts-videos">
+<div class="section-header" data-toggle="section-shorts-videos">
+<span class="section-title">🎞️ Scènes Shorts <span class="badge" id="shorts-videos-count">0</span></span>
+<span class="chevron">▼</span>
+</div>
+<div class="section-body"><div class="section-content">
+<div class="videos-grid" id="shorts-videos-grid"></div>
+</div></div>
+</div>
+
+<div class="assembly-box hidden" id="shorts-assembly-box">
+<div class="ass-title">🎬 Assemblage Short MP4</div>
+<div class="ass-desc">Fusionne les scènes en un MP4 vertical, prêt à uploader sur YouTube Shorts.</div>
+<label class="ass-option" id="shorts-include-narration-label"><input type="checkbox" id="shorts-include-narration"> <span>🔊 Graver la narration TTS dans le MP4</span></label>
+<div class="ass-status" id="shorts-ass-status"></div>
+<div class="ass-progress" id="shorts-ass-progress"><div class="ass-progress-fill" id="shorts-ass-progress-fill"></div></div>
+<button type="button" class="btn btn-assemble" id="shorts-assemble-btn" disabled>🎬 Assembler le Short</button>
+<div class="ass-download" id="shorts-ass-download">
+<a id="shorts-ass-download-link" download="shorts.mp4">⬇ Télécharger le Short</a>
+</div>
+</div>
+
+</div>
+
+<div class="status-bar" id="status-bar"><div class="spinner"></div><span id="status-text">Préparation…</span></div>
+<div class="toast" id="toast"><span id="toast-icon">✓</span><span id="toast-text">Message</span></div>
+
+<div class="debug-panel" id="debug-panel">
+<div class="debug-header" id="debug-header">
+<div class="debug-title">🖥️ Console <span class="debug-badge" id="debug-count">0</span></div>
+<div class="debug-actions">
+<button type="button" id="debug-copy-btn">Copier</button>
+<button type="button" id="debug-clear-btn">Effacer</button>
+<button type="button" id="debug-collapse-btn">−</button>
+</div>
+</div>
+<div class="debug-body" id="debug-body"></div>
+</div>
+
+<div class="player-overlay" id="player-overlay">
+<canvas id="player-canvas"></canvas>
+<div class="player-hint" id="player-hint-overlay">Échap ou clic pour quitter</div>
+</div>
+
+<script>
+// Détection synchrone (même origine, localhost) du relais serveur optionnel.
+// En mode fichier:// ou sur un hébergement statique, on reste en mode direct.
+window.JT_BACKEND = { proxy: false, tts: false, keys: 0, platform: '', version: 'direct' };
+if (location.protocol === 'http:' || location.protocol === 'https:') {
+  try {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', '/api/health', false);
+    xhr.send(null);
+    if (xhr.status === 200) {
+      const info = JSON.parse(xhr.responseText || '{}');
+      if (info && info.ok) {
+        window.JT_BACKEND = {
+          proxy: !!info.proxy,
+          tts: !!info.tts,
+          keys: Number(info.keys || 0),
+          platform: info.platform || '',
+          version: info.version || 'proxy'
+        };
+      }
+    }
+  } catch (e) {}
+}
+</script>
+
+<script type="module">
+// Modules FFmpeg : local d'abord (mode hors-ligne après `node prepare-vendor.mjs`),
+// puis CDN en secours. Les imports sont dynamiques pour que l'app continue de
+// fonctionner même si FFmpeg est indisponible.
+let FFmpeg = null;
+let fetchFile = null;
+let toBlobURL = null;
+
+const CDN_FFMPEG = 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js';
+const CDN_UTIL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/esm/index.js';
+
+try {
+  const [fm, um] = await Promise.all([
+    import('./vendor/ffmpeg/ffmpeg/index.js'),
+    import('./vendor/ffmpeg/util/index.js')
+  ]);
+  FFmpeg = fm.FFmpeg;
+  fetchFile = um.fetchFile;
+  toBlobURL = um.toBlobURL;
+  window.__ffmpegSource = 'local';
+} catch (localError) {
+  try {
+    const [fm, um] = await Promise.all([import(CDN_FFMPEG), import(CDN_UTIL)]);
+    FFmpeg = fm.FFmpeg;
+    fetchFile = um.fetchFile;
+    toBlobURL = um.toBlobURL;
+    window.__ffmpegSource = 'cdn';
+  } catch (cdnError) {
+    window.__ffmpegSource = 'none';
+    window.__ffmpegImportError = (cdnError && cdnError.message) || String(cdnError);
+  }
+}
+
+// Adresses de l'API Agnes.
+// En mode relais (`node server.mjs`), les URLs sont relatives et la clé reste
+// côté serveur. En mode direct, le navigateur appelle Agnes avec la clé locale.
+const BACKEND = Object.assign({ proxy: false, tts: false, keys: 0 }, window.JT_BACKEND || {});
+const API_BASE = BACKEND.proxy ? '/api/agnes/v1' : 'https://apihub.agnes-ai.com/v1';
+const POLL_BASE = BACKEND.proxy ? '/api/agnes/agnesapi' : 'https://apihub.agnes-ai.com/agnesapi';
+const TTS_URL = '/api/tts';
+
+const MODEL_TEXT = 'agnes-2.5-flash';
+const MODEL_IMAGE = 'agnes-image-2.1-flash';
+const MODEL_VIDEO = 'agnes-video-2.5-flash';
+const FRAME_RATE = 24;
+
+// ⚠️ PARAMÈTRES VIDÉO — à adapter selon l'API Agnes réelle
+const VIDEO_DEFAULTS = {
+    size: '720p',           // était '720P' — l'API attend souvent minuscules
+    aspect_ratio: '9:16',   // format portrait TikTok/Shorts
+    n: 1
+};
+
+const VIDEO_FIRST_POLL_DELAY_SEC = 6;
+const VIDEO_POLL_INTERVALS = [2, 2, 3, 3, 4, 5, 5];
+const VIDEO_MAX_POLL_ATTEMPTS = 300;
+
+const KEYS_STORAGE = 'jt_chatons_studio_keys_v1';
+const PLANNER_STORAGE = 'jt_chatons_planner_v2';
+const LANG_STORAGE = 'jt_chatons_lang_v2';
+const DASHBOARD_STORAGE = 'jt_chatons_dashboard_v2';
+const DEBUG_MAX = 600;
+
+const FFMPEG_CORE_URL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js';
+const FFMPEG_WASM_URL = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm';
+
+const RPM = { tiktok_fr: 0.45, tiktok_us: 2.25, shorts: 0.15 };
+const USD_TO_EUR = 0.92;
+
+const WA_PALETTES = [
+  { id:'pink-mint',   label:'Rose poudré & Menthe',   colors:['#F4C2C2','#A8D8B9','#E5B95A','#F5F0E1','#7B9FB0'] },
+  { id:'coral-teal',  label:'Corail & Turquoise',     colors:['#E8A87C','#85CDCA','#F4E4BA','#D4A5A5','#7C6A8B'] },
+  { id:'mustard-blue',label:'Moutarde & Bleu ciel',   colors:['#F7D794','#778BEB','#E77F67','#F1E7D0','#3B4B55'] },
+  { id:'lavender',    label:'Lavande & Ocre',         colors:['#C5B7D9','#E5B95A','#F4A6A6','#F5EFE0','#7A8B7E'] },
+  { id:'sage-blush',  label:'Sauge & Blush',          colors:['#B8C9A8','#F1C6C6','#E8B44A','#F5F0E1','#5B6E7A'] },
+  { id:'ochre-rose',  label:'Ocre & Rose fané',       colors:['#D9A44A','#E8B8B8','#8FAE8B','#F4E8D0','#6B5B7B'] }
+];
+
+const SERIES_CHARACTERS = {
+  marcel:{name:'Marcel',role:'protagoniste',breed:'siamois',description:'chaton siamois, casque cosmonaute chromé, combinaison rose poudré, écharpe crème',physical_description:'cute kawaii humanoid kitten with a siamese cat face, wearing a chrome retro cosmonaut helmet and a pastel pink corduroy jumpsuit with cream scarf, deadpan expression',en_description:'cute kawaii humanoid kitten with a siamese cat face, wearing a chrome retro cosmonaut helmet and a pastel pink corduroy jumpsuit with cream scarf, deadpan expression'},
+  louna:{name:'Louna',role:'meilleure amie',breed:'persan',description:'chatte persane blanche, casque pilote à antennes, robe trapèze menthe, collants rayés',physical_description:'cute kawaii humanoid kitten with a white persian cat face and green eyes, wearing a retro pilot helmet with antennas and a mint green trapeze dress with pastel striped tights, deadpan expression',en_description:'cute kawaii humanoid kitten with a white persian cat face and green eyes, wearing a retro pilot helmet with antennas and a mint green trapeze dress with pastel striped tights, deadpan expression'},
+  pistache:{name:'Pistache',role:'voisin farceur',breed:'chartreux',description:'chaton chartreux gris-bleu, casque moto moutarde, blouson tweed sauge',physical_description:'cute kawaii humanoid kitten with a chartreux grey-blue cat face, wearing a mustard retro motorcycle helmet and a sage tweed jacket with cream high-waisted trousers, deadpan expression',en_description:'cute kawaii humanoid kitten with a chartreux grey-blue cat face, wearing a mustard retro motorcycle helmet and a sage tweed jacket with cream high-waisted trousers, deadpan expression'},
+  berlioz:{name:'Berlioz',role:'mystérieux',breed:'maine coon',description:'chaton maine coon roux, casque scaphandrier bleu ciel, long manteau lavande',physical_description:'cute kawaii humanoid kitten with a ginger maine coon cat face, wearing a sky-blue retro diving helmet and a long lavender coat with coral scarf, deadpan expression',en_description:'cute kawaii humanoid kitten with a ginger maine coon cat face, wearing a sky-blue retro diving helmet and a long lavender coat with coral scarf, deadpan expression'},
+  felicie:{name:'Félicie',role:'journaliste',breed:'angora',description:'chaton angora blanc, casque plexiglas transparent, tailleur ocre, nœud géométrique',physical_description:'cute kawaii humanoid kitten with a white angora cat face, wearing a transparent retro plexiglass helmet and an ochre tailored suit with a geometric bow tie, deadpan expression',en_description:'cute kawaii humanoid kitten with a white angora cat face, wearing a transparent retro plexiglass helmet and an ochre tailored suit with a geometric bow tie, deadpan expression'},
+  octave:{name:'Octave',role:'sage du quartier',breed:'norvégien',description:'chaton norvégien gris, casque cosmonaute crème, cardigan blush, lunettes rondes',physical_description:'cute kawaii humanoid kitten with a grey norwegian forest cat face, wearing a cream retro cosmonaut helmet and a blush cardigan with round glasses, deadpan expression',en_description:'cute kawaii humanoid kitten with a grey norwegian forest cat face, wearing a cream retro cosmonaut helmet and a blush cardigan with round glasses, deadpan expression'}
+};
+
+const PLANNER_30 = [
+  {day:1,theme:'drama',title_fr:'Épisode 1 — La disparition de Marcel',title_en:'Episode 1 — Marcel is Gone',topics_fr:['Marcel le chaton siamois a disparu pendant la nuit','Louna, sa meilleure amie, découvre sa chambre vide','Un indice mystérieux près de la cheminée','Pistache le voisin semble cacher quelque chose','Révélation : Marcel préparait une fête surprise'],topics_en:['Marcel the siamese kitten disappeared during the night','Louna his best friend discovers his empty room','A mysterious clue near the fireplace','Pistache the neighbor seems to hide something','Reveal: Marcel was preparing a surprise party'],chars:['marcel','louna','pistache','felicie']},
+  {day:2,theme:'mystere',title_fr:'Épisode 2 — Le secret de la bibliothèque',title_en:'Episode 2 — The Library Secret',topics_fr:['Louna explore la bibliothèque du quartier','Elle trouve un livre qui chuchote','Félicie la journaliste mène l\'enquête','Un passage secret s\'ouvre derrière l\'étagère','Berlioz apparaît dans l\'ombre'],topics_en:['Louna explores the neighborhood library','She finds a whispering book','Félicie the journalist investigates','A secret passage opens behind the shelf','Berlioz appears in the shadows'],chars:['louna','felicie','berlioz','octave']},
+  {day:3,theme:'comedie',title_fr:'Épisode 3 — Le gâteau catastrophique',title_en:'Episode 3 — The Cake Catastrophe',topics_fr:['Pistache décide de cuisiner un gâteau','La farine explose partout dans la cuisine','Marcel tente de sauver la situation','Le gâteau finit sur le plafond','Octave goûte et déclare que c\'est délicieux'],topics_en:['Pistache decides to bake a cake','Flour explodes everywhere in the kitchen','Marcel tries to save the situation','The cake ends up on the ceiling','Octave tastes it and declares it delicious'],chars:['pistache','marcel','octave','louna']},
+  {day:4,theme:'aventure',title_fr:'Épisode 4 — Le train de nuit',title_en:'Episode 4 — The Night Train',topics_fr:['Marcel embarque dans un train de nuit rétro','Louna le rejoint en cachette','Le contrôleur est un chaton très strict','Une vitre s\'ouvre et le vent emporte le chapeau de Marcel','Ils arrivent dans une gare déserte'],topics_en:['Marcel boards a retro night train','Louna joins him secretly','The conductor is a very strict kitten','A window opens and the wind takes Marcel\'s hat','They arrive at a deserted station'],chars:['marcel','louna','pistache','felicie']},
+  {day:5,theme:'quotidien',title_fr:'Épisode 5 — Dimanche chez Octave',title_en:'Episode 5 — Sunday at Octave\'s',topics_fr:['Octave reçoit tous les chatons pour le thé','Pistache apporte des biscuits douteux','Louna raconte une histoire étrange','Berlioz toque à la porte','Le thé refroidit pendant la conversation'],topics_en:['Octave hosts all the kittens for tea','Pistache brings questionable cookies','Louna tells a strange story','Berlioz knocks at the door','The tea grows cold during the conversation'],chars:['octave','pistache','louna','berlioz']},
+  {day:6,theme:'revue',title_fr:'Épisode 6 — Le JT de Félicie',title_en:'Episode 6 — Félicie\'s News Report',topics_fr:['Félicie présente son propre JT parodique','Reportage sur le pot de lait renversé','Interview exclusive de Pistache','Marcel refuse de commenter','Le générique de fin arrive trop tôt'],topics_en:['Félicie presents her own parody news report','Report on the spilled milk pot','Exclusive interview with Pistache','Marcel refuses to comment','The end credits arrive too early'],chars:['felicie','pistache','marcel','octave']},
+  {day:7,theme:'drama',title_fr:'Épisode 7 — Le retour de Marcel',title_en:'Episode 7 — Marcel Returns',topics_fr:['Marcel revient après une longue absence','Louna lui demande où il était','Pistache avoue qu\'il savait','Berlioz observe en silence','Une lettre mystérieuse apparaît sur la table'],topics_en:['Marcel returns after a long absence','Louna asks him where he was','Pistache admits he knew','Berlioz watches in silence','A mysterious letter appears on the table'],chars:['marcel','louna','pistache','berlioz']},
+  {day:8,theme:'mystere',title_fr:'Épisode 8 — La maison aux rideaux rouges',title_en:'Episode 8 — The House with Red Curtains',topics_fr:['Félicie découvre une maison étrange','Les rideaux rouges bougent sans vent','Octave reconnaît la maison de son enfance','Louna entend un piano','Une mélodie s\'échappe par la fenêtre'],topics_en:['Félicie discovers a strange house','The red curtains move without wind','Octave recognizes the house from his childhood','Louna hears a piano','A melody escapes through the window'],chars:['felicie','octave','louna','berlioz']},
+  {day:9,theme:'comedie',title_fr:'Épisode 9 — Le concours de danse',title_en:'Episode 9 — The Dance Contest',topics_fr:['Pistache organise un concours de danse','Marcel refuse de participer','Louna exécute une chorégraphie parfaite','Octave danse le tango','Pistache s\'emmêle les pattes et tombe'],topics_en:['Pistache organizes a dance contest','Marcel refuses to participate','Louna performs a perfect choreography','Octave dances the tango','Pistache trips over his paws and falls'],chars:['pistache','marcel','louna','octave']},
+  {day:10,theme:'aventure',title_fr:'Épisode 10 — La montgolfière',title_en:'Episode 10 — The Hot Air Balloon',topics_fr:['Les chatons montent dans une montgolfière','Le vent les pousse au-dessus des toits','Louna a le vertige','Marcel admire le paysage','Ils atterrissent dans un champ de lavande'],topics_en:['The kittens climb into a hot air balloon','The wind pushes them over the rooftops','Louna feels dizzy','Marcel admires the landscape','They land in a lavender field'],chars:['marcel','louna','pistache','felicie']},
+  {day:11,theme:'quotidien',title_fr:'Épisode 11 — Le grand ménage',title_en:'Episode 11 — Spring Cleaning',topics_fr:['Octave décide de ranger son salon','Il découvre des objets oubliés','Marcel l\'aide avec enthousiasme','Pistache salit tout en riant','Louna trouve une photo ancienne'],topics_en:['Octave decides to clean his living room','He discovers forgotten objects','Marcel helps with enthusiasm','Pistache makes a mess laughing','Louna finds an old photograph'],chars:['octave','marcel','pistache','louna']},
+  {day:12,theme:'revue',title_fr:'Épisode 12 — Le JT des records',title_en:'Episode 12 — The Record-Breaking News',topics_fr:['Félicie présente les records du quartier','Le chaton qui dort le plus longtemps','La plus grosse pelote de laine','Pistache détient trois records','Marcel refuse de participer'],topics_en:['Félicie presents the neighborhood records','The kitten who sleeps the longest','The biggest ball of yarn','Pistache holds three records','Marcel refuses to participate'],chars:['felicie','pistache','marcel','octave']},
+  {day:13,theme:'drama',title_fr:'Épisode 13 — La lettre de Berlioz',title_en:'Episode 13 — Berlioz\'s Letter',topics_fr:['Berlioz laisse une lettre sur la table','Marcel la lit à haute voix','Louna reconnaît l\'écriture','Pistache avoue avoir vu Berlioz partir','La lettre parle d\'un ancien secret'],topics_en:['Berlioz leaves a letter on the table','Marcel reads it aloud','Louna recognizes the handwriting','Pistache admits seeing Berlioz leave','The letter speaks of an old secret'],chars:['berlioz','marcel','louna','pistache']},
+  {day:14,theme:'mystere',title_fr:'Épisode 14 — Le phare abandonné',title_en:'Episode 14 — The Abandoned Lighthouse',topics_fr:['Les chatons explorent un phare abandonné','Une lumière s\'allume au sommet','Félicie prend des photos','Octave raconte la légende du gardien','Un escalier mène à une pièce secrète'],topics_en:['The kittens explore an abandoned lighthouse','A light turns on at the top','Félicie takes pictures','Octave tells the legend of the keeper','A staircase leads to a secret room'],chars:['felicie','octave','marcel','louna']},
+  {day:15,theme:'comedie',title_fr:'Épisode 15 — La sieste interrompue',title_en:'Episode 15 — The Interrupted Nap',topics_fr:['Marcel s\'apprête à faire une sieste','Pistache frappe à la porte','Louna appelle au téléphone','Octave passe prendre le thé','Marcel finit par s\'endormir dans le placard'],topics_en:['Marcel is about to take a nap','Pistache knocks at the door','Louna calls on the phone','Octave drops by for tea','Marcel ends up falling asleep in the closet'],chars:['marcel','pistache','louna','octave']},
+  {day:16,theme:'aventure',title_fr:'Épisode 16 — Le marché flottant',title_en:'Episode 16 — The Floating Market',topics_fr:['Les chatons visitent un marché sur l\'eau','Louna achète un chapeau pastel','Marcel négocie un livre ancien','Pistache renverse une pile de fruits','Félicie filme toute la scène'],topics_en:['The kittens visit a floating market','Louna buys a pastel hat','Marcel negotiates an old book','Pistache knocks over a pile of fruit','Félicie films the whole scene'],chars:['marcel','louna','pistache','felicie']},
+  {day:17,theme:'quotidien',title_fr:'Épisode 17 — La recette de famille',title_en:'Episode 17 — The Family Recipe',topics_fr:['Octave partage une recette secrète','Marcel prend des notes','Louna goûte la pâte','Pistache ajoute trop de sel','Le plat finit par être délicieux'],topics_en:['Octave shares a secret recipe','Marcel takes notes','Louna tastes the dough','Pistache adds too much salt','The dish ends up delicious'],chars:['octave','marcel','louna','pistache']},
+  {day:18,theme:'revue',title_fr:'Épisode 18 — Les petites annonces',title_en:'Episode 18 — The Classifieds',topics_fr:['Félicie lit les petites annonces du quartier','Recherche chaton pour promenade','Vends pelote de laine vintage','Pistache répond à toutes','Marcel se méfie'],topics_en:['Félicie reads the neighborhood classifieds','Seeking kitten for walks','Selling vintage ball of yarn','Pistache answers them all','Marcel is suspicious'],chars:['felicie','pistache','marcel','louna']},
+  {day:19,theme:'drama',title_fr:'Épisode 19 — Le secret de Louna',title_en:'Episode 19 — Louna\'s Secret',topics_fr:['Louna semble préoccupée','Marcel lui demande ce qui ne va pas','Pistache surprend une conversation','Berlioz réapparaît','Louna révèle qu\'elle part en voyage'],topics_en:['Louna seems worried','Marcel asks her what\'s wrong','Pistache overhears a conversation','Berlioz reappears','Louna reveals she is going on a trip'],chars:['louna','marcel','pistache','berlioz']},
+  {day:20,theme:'mystere',title_fr:'Épisode 20 — L\'horloge arrêtée',title_en:'Episode 20 — The Stopped Clock',topics_fr:['Toutes les horloges du quartier s\'arrêtent','Félicie cherche une explication','Octave consulte ses vieux livres','Une horloge sonne minuit','Un message apparaît dans le mécanisme'],topics_en:['All the clocks in the neighborhood stop','Félicie looks for an explanation','Octave consults his old books','A clock rings midnight','A message appears in the mechanism'],chars:['felicie','octave','marcel','louna']},
+  {day:21,theme:'comedie',title_fr:'Épisode 21 — La télévision cassée',title_en:'Episode 21 — The Broken TV',topics_fr:['Pistache casse la télévision','Marcel tente de la réparer','Louna apporte des outils','Octave propose une solution','La télévision fonctionne à nouveau… en noir et blanc'],topics_en:['Pistache breaks the TV','Marcel tries to fix it','Louna brings tools','Octave suggests a solution','The TV works again… in black and white'],chars:['pistache','marcel','louna','octave']},
+  {day:22,theme:'aventure',title_fr:'Épisode 22 — La forêt de bambous',title_en:'Episode 22 — The Bamboo Forest',topics_fr:['Les chatons se perdent dans une forêt de bambous','Louna entend un bruit étrange','Marcel découvre un sentier','Pistache cueille des champignons','Ils trouvent une maison cachée'],topics_en:['The kittens get lost in a bamboo forest','Louna hears a strange noise','Marcel discovers a path','Pistache picks mushrooms','They find a hidden house'],chars:['marcel','louna','pistache','felicie']},
+  {day:23,theme:'quotidien',title_fr:'Épisode 23 — Le courrier du matin',title_en:'Episode 23 — Morning Mail',topics_fr:['Marcel vérifie la boîte aux lettres','Une lettre pour Louna','Une carte postale pour Octave','Pistache reçoit un colis','Berlioz n\'a jamais de courrier'],topics_en:['Marcel checks the mailbox','A letter for Louna','A postcard for Octave','Pistache receives a package','Berlioz never gets mail'],chars:['marcel','louna','octave','berlioz']},
+  {day:24,theme:'revue',title_fr:'Épisode 24 — Le bulletin météo',title_en:'Episode 24 — The Weather Report',topics_fr:['Félicie présente la météo du quartier','Nuages pastel ce matin','Averse de plumes à midi','Éclaircie en fin d\'après-midi','Pistache a oublié son parapluie'],topics_en:['Félicie presents the neighborhood weather','Pastel clouds this morning','Feather shower at noon','Clearing in the late afternoon','Pistache forgot his umbrella'],chars:['felicie','pistache','marcel','louna']},
+  {day:25,theme:'drama',title_fr:'Épisode 25 — Le retour de Louna',title_en:'Episode 25 — Louna Returns',topics_fr:['Louna revient de son voyage','Elle rapporte des cadeaux','Marcel l\'attend sur le quai','Pistache prépare une fête','Berlioz observe de loin'],topics_en:['Louna returns from her trip','She brings back gifts','Marcel waits for her on the platform','Pistache prepares a party','Berlioz watches from afar'],chars:['louna','marcel','pistache','berlioz']},
+  {day:26,theme:'mystere',title_fr:'Épisode 26 — Le tableau volé',title_en:'Episode 26 — The Stolen Painting',topics_fr:['Le tableau du salon d\'Octave a disparu','Félicie enquête','Une trace de pas mène au jardin','Pistache avoue avoir déplacé le tableau','Le tableau était un faux'],topics_en:['Octave\'s living room painting has disappeared','Félicie investigates','A footprint leads to the garden','Pistache admits moving the painting','The painting was a fake'],chars:['octave','felicie','pistache','marcel']},
+  {day:27,theme:'comedie',title_fr:'Épisode 27 — Le permis de conduire',title_en:'Episode 27 — The Driving Test',topics_fr:['Pistache passe son permis de conduire','Marcel est son moniteur','Louna stresse à l\'arrière','Octave donne des conseils','Pistache renverse un plot'],topics_en:['Pistache takes his driving test','Marcel is his instructor','Louna is stressed in the back','Octave gives advice','Pistache knocks over a cone'],chars:['pistache','marcel','louna','octave']},
+  {day:28,theme:'aventure',title_fr:'Épisode 28 — Le désert de sable',title_en:'Episode 28 — The Sand Desert',topics_fr:['Les chatons arrivent dans le désert','Le soleil est brûlant','Louna trouve une oasis','Marcel découvre une pyramide','Pistache fait du sable un château'],topics_en:['The kittens arrive in the desert','The sun is burning hot','Louna finds an oasis','Marcel discovers a pyramid','Pistache builds a sand castle'],chars:['marcel','louna','pistache','felicie']},
+  {day:29,theme:'quotidien',title_fr:'Épisode 29 — La soirée jeux',title_en:'Episode 29 — Game Night',topics_fr:['Octave organise une soirée jeux','Marcel gagne au premier jeu','Pistache triche discrètement','Louna renverse le plateau','Tout le monde finit par rire'],topics_en:['Octave hosts a game night','Marcel wins the first game','Pistache cheats discreetly','Louna knocks over the board','Everyone ends up laughing'],chars:['octave','marcel','pistache','louna']},
+  {day:30,theme:'drama',title_fr:'Épisode 30 — La grande révélation',title_en:'Episode 30 — The Big Reveal',topics_fr:['Tous les chatons se réunissent','Berlioz révèle son secret','Marcel comprend le message de la lettre','Louna remercie tout le monde','Pistache annonce une nouvelle saison'],topics_en:['All the kittens gather','Berlioz reveals his secret','Marcel understands the letter\'s message','Louna thanks everyone','Pistache announces a new season'],chars:['berlioz','marcel','louna','pistache','felicie','octave']}
+];
+
+const state = {
+  keyPool: [], isRunning: false, stopRequested: false, lang: 'fr', currentDay: 1,
+  jtTheme: 'drama', jtTitle: 'Le JT des Chatons — Épisode 1', topics: [],
+  palette: WA_PALETTES[0], sceneDurationSec: 10, selectedCharacters: [],
+  script: null, videos: [], isPlayingFilm: false, playRAF: null, voiceEnabled: true,
+  workingPollUrlBuilder: null, ffmpeg: null, ffmpegLoaded: false, assembledBlobUrl: null,
+  completedDays: [], dashboard: {}, dashSelectedDay: 1,
+  shortsLang: 'en', shortsTheme: 'drama', shortsTopics: [],
+  shortsTitle: 'Marcel\'s Secret Letter 📮 | Cat Animation Shorts',
+  shortsDesc: 'Marcel finds a mysterious letter in his mailbox. What does it contain? Watch till the end!\n#Shorts #CatAnimation #AIgenerated #WesAnderson',
+  shortsSceneDurationSec: 8, shortsScript: null, shortsVideos: [],
+  shortsWorkingPollUrlBuilder: null, shortsIsRunning: false, shortsStopRequested: false,
+  shortsAssembledBlobUrl: null
+};
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function setStatus(text){const b=document.getElementById('status-bar');const t=document.getElementById('status-text');if(!b||!t)return;if(text){b.classList.add('visible');t.textContent=text}else b.classList.remove('visible')}
+let toastTimeout=null;
+function showToast(message,type='success',duration=2800){const t=document.getElementById('toast');const i=document.getElementById('toast-icon');const x=document.getElementById('toast-text');if(!t||!i||!x)return;t.classList.remove('visible','success','error','warn');void t.offsetWidth;const icons={success:'✓',error:'✕',warn:'⚠'};i.textContent=icons[type]||'✓';x.textContent=message;t.classList.add(type);requestAnimationFrame(()=>t.classList.add('visible'));if(toastTimeout)clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>t.classList.remove('visible'),duration)}
+function nowTime(){return new Date().toLocaleTimeString('fr-FR',{hour12:false})}
+
+let debugCount=0,debugEntries=[],debugCollapsed=false;
+function debugLog(level,category,message,data){const body=document.getElementById('debug-body');if(!body)return;const time=nowTime();const entry=document.createElement('div');entry.className='debug-entry '+level;let html='<span class="debug-time">'+time+'</span><span class="debug-cat">['+esc(category)+']</span><span class="debug-msg">'+esc(message)+'</span>';if(data!==undefined&&data!==null){let ds;if(typeof data==='string')ds=data;else{try{ds=JSON.stringify(data,null,2)}catch(e){ds=String(data)}}if(ds.length>3000)ds=ds.slice(0,3000)+'\n…';html+='<pre class="debug-data">'+esc(ds)+'</pre>'}entry.innerHTML=html;body.appendChild(entry);debugEntries.push({time,level,category,message});if(debugEntries.length>DEBUG_MAX)debugEntries.shift();while(body.children.length>DEBUG_MAX)body.removeChild(body.firstChild);body.scrollTop=body.scrollHeight;debugCount++;const countEl=document.getElementById('debug-count');if(countEl)countEl.textContent=String(debugCount);}
+
+function debugRawAgnesResponse(label, rawContent) {
+    if (!rawContent) {
+        debugLog('error', 'AGNES-RAW', label + ' : réponse vide ou undefined');
+        return;
+    }
+    const truncated = rawContent.length > 2000
+        ? rawContent.slice(0, 2000) + '\n…[tronqué, longueur totale: ' + rawContent.length + ']'
+        : rawContent;
+    debugLog('error', 'AGNES-RAW', label + ' : réponse brute reçue (longueur: ' + rawContent.length + ')', truncated);
+}
+
+function clearDebug(){const b=document.getElementById('debug-body');if(b)b.innerHTML='';debugEntries=[];debugCount=0;const c=document.getElementById('debug-count');if(c)c.textContent='0'}
+function copyDebug(){const lines=debugEntries.map(e=>e.time+' ['+e.category+'] '+e.message).join('\n');const finish=(ok)=>showToast(ok?'Console copiée':'Copie impossible',ok?'success':'error');try{if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(lines).then(()=>finish(true)).catch(()=>legacyCopy(lines,finish));return}}catch(e){}legacyCopy(lines,finish)}
+function legacyCopy(text,cb){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}document.body.removeChild(ta);cb(ok)}
+function toggleDebugCollapse(){const p=document.getElementById('debug-panel');const b=document.getElementById('debug-collapse-btn');if(!p||!b)return;debugCollapsed=!debugCollapsed;p.classList.toggle('collapsed',debugCollapsed);b.textContent=debugCollapsed?'+':'−'}
+
+function getStoredKeys(){try{const raw=localStorage.getItem(KEYS_STORAGE);if(!raw)return[];const arr=JSON.parse(raw);if(!Array.isArray(arr))return[];return arr.filter(k=>typeof k==='string'&&k.trim().length>0)}catch(e){return[]}}
+function setStoredKeys(keys){try{localStorage.setItem(KEYS_STORAGE,JSON.stringify(keys))}catch(e){}}
+function refreshKeyPool(){const stored=getStoredKeys();const old=state.keyPool||[];state.keyPool=stored.map(k=>{const existing=old.find(p=>p.key===k);return existing||{key:k,lastUsed:0,cooldownUntil:0,active:true,errorCount:0}})}
+function hasActiveKey(){return (BACKEND.proxy && BACKEND.keys>0) || (!BACKEND.proxy && state.keyPool.some(k=>k.active))}
+function getReadyKey(){const now=Date.now();const active=state.keyPool.filter(k=>k.active);if(active.length===0)return{key:null,waitMs:0};const ready=active.filter(k=>!k.cooldownUntil||k.cooldownUntil<=now);if(ready.length===0){const soonest=active.reduce((a,b)=>(a.cooldownUntil||0)<(b.cooldownUntil||0)?a:b);return{key:null,waitMs:Math.max(1000,(soonest.cooldownUntil||0)-now)}}ready.sort((a,b)=>(a.lastUsed||0)-(b.lastUsed||0));return{key:ready[0],waitMs:0}}
+async function acquireKey(label){while(true){if(state.stopRequested||state.shortsStopRequested)throw new Error('Arrêt demandé');if(BACKEND.proxy)return null;const{key,waitMs}=getReadyKey();if(key){key.lastUsed=Date.now();return key}if(waitMs===0)throw new Error('Aucune clé API active');await sleep(waitMs)}}
+function renderKeysStatus(){const el=document.getElementById('api-keys-status');if(!el)return;if(BACKEND.proxy){el.innerHTML='<div class="key-row"><span class="key-id">🔐 Clé serveur · '+esc((BACKEND.platform||'relais'))+'</span><span class="key-state">'+(BACKEND.keys>0?'Active':'Absente')+'</span></div>';return}if(state.keyPool.length===0){el.innerHTML='';return}const now=Date.now();el.innerHTML=state.keyPool.map((k,i)=>{let stateHtml='<span class="key-state">Active</span>';if(!k.active)stateHtml='<span class="key-state dead">Inactive</span>';else if(k.cooldownUntil>now){const sec=Math.ceil((k.cooldownUntil-now)/1000);stateHtml='<span class="key-state cool">Cooldown '+sec+'s</span>'}return'<div class="key-row"><span class="key-id">#'+(i+1)+' · '+esc(k.key.slice(0,8))+'…'+esc(k.key.slice(-4))+'</span>'+stateHtml+'</div>'}).join('')}
+function saveKeysFromUI(){if(BACKEND.proxy){showToast('Clé gérée par le serveur (AGNES_API_KEY)','warn',4000);return}const input=document.getElementById('api-keys-input');if(!input)return;const raw=input.value||'';const keys=raw.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);const valid=keys.filter(k=>k.startsWith('sk-'));setStoredKeys(valid);refreshKeyPool();updateApiPanel();if(valid.length===0)showToast('Aucune clé valide','warn');else showToast(valid.length+' clé(s) enregistrée(s) ✓','success')}
+function updateApiPanel(){const panel=document.getElementById('api-panel');const input=document.getElementById('api-keys-input');const line=document.getElementById('api-status-line');const text=document.getElementById('api-status-text');const save=document.getElementById('api-save-btn');const hint=document.getElementById('api-security-hint');if(!panel||!input||!line||!text)return;
+if(BACKEND.proxy){panel.classList.toggle('ok',BACKEND.keys>0);line.classList.toggle('ok',BACKEND.keys>0);text.textContent=BACKEND.keys>0?('Mode sécurisé — '+BACKEND.keys+' clé(s) côté serveur'):'Mode sécurisé — ajoute AGNES_API_KEY dans .env';input.value='';input.disabled=true;input.placeholder='Clé gérée par le serveur (AGNES_API_KEY)';if(save)save.disabled=true;if(hint){hint.style.color=BACKEND.keys>0?'var(--ok)':'var(--warn)';hint.innerHTML=BACKEND.keys>0?('✅ Clé jamais exposée au navigateur. Relais local actif'+(BACKEND.tts?' · narration TTS disponible':' · TTS indisponible sur ce système')+'.'):'⚠️ Relais actif mais aucune clé serveur. Ajoute <code>AGNES_API_KEY=sk-…</code> dans <code>.env</code> puis relance <code>node server.mjs</code>.'}renderKeysStatus();updateButtons();return}
+refreshKeyPool();const n=state.keyPool.length;if(n>0){panel.classList.add('ok');line.classList.add('ok');text.textContent=n+' clé(s) active(s)';input.value=state.keyPool.map(k=>k.key).join('\n');input.placeholder=''}else{panel.classList.remove('ok');line.classList.remove('ok');text.textContent='Aucune clé API enregistrée';input.value='';input.placeholder='Collez vos clés API ici'}if(save)save.disabled=false;if(hint){hint.style.color='var(--warn)';hint.innerHTML='⚠️ Les clés sont stockées dans le navigateur et envoyées directement à Agnes. Pour un SaaS public, lance <code>node server.mjs</code> : la clé reste côté serveur et la narration TTS peut être gravée dans le MP4.'}renderKeysStatus();updateButtons()}
+
+async function runApiDiagnostic(){
+const btn=document.getElementById('api-diag-btn');
+if(btn)btn.disabled=true;
+try{
+debugLog('state','DIAG','Mode : '+(BACKEND.proxy?'relais serveur ('+BACKEND.keys+' clé(s))':'direct navigateur ('+state.keyPool.length+' clé(s))'));
+let models=[],modelsOk=false,chatOk=false,chatError=null;
+// 1) Liste des modèles : valide la clé (401 si invalide).
+try{
+const res=await apiFetch(API_BASE+'/models',{method:'GET'},'Diagnostic',2);
+const data=await res.json();
+const raw=Array.isArray(data&&data.data)?data.data:(Array.isArray(data&&data.models)?data.models:[]);
+models=raw.map(m=>m&&(m.id||m.name)).filter(Boolean);
+modelsOk=true;
+debugLog('success','DIAG','/v1/models OK — '+(models.length||'?')+' modèle(s)',models.slice(0,25));
+if(models.length&&!models.includes(MODEL_VIDEO))debugLog('warn','DIAG','Modèle vidéo '+MODEL_VIDEO+' absent de la liste — vérifie ton accès');
+}catch(e){
+debugLog('warn','DIAG','/v1/models indisponible : '+String(e.message||e).slice(0,120));
+}
+// 2) Mini appel chat : confirme l'accès au modèle texte et les crédits.
+try{
+const res=await apiFetch(API_BASE+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:MODEL_TEXT,messages:[{role:'user',content:'ping'}],max_tokens:1,temperature:0})},'Diagnostic Chat',2);
+const data=await res.json();
+if(!data||!Array.isArray(data.choices)||data.choices.length===0)throw new Error('réponse chat inattendue');
+chatOk=true;
+debugLog('success','DIAG','Chat OK — modèle '+MODEL_TEXT,data);
+}catch(e){
+chatError=e;
+debugLog('warn','DIAG','Chat échoué : '+String(e.message||e).slice(0,140));
+}
+if(modelsOk&&chatOk){
+showToast('API OK'+(models.length?' — '+models.length+' modèles':'')+' · chat validé','success',4500);
+}else if(modelsOk){
+showToast('Clé valide, mais chat échoué — voir la console','warn',6000);
+}else if(chatOk){
+showToast('Chat OK (liste des modèles indisponible)','success',4500);
+}else{
+throw chatError||new Error('API injoignable');
+}
+    // 3) Test rapide de l'endpoint vidéo (sans attendre la génération complète)
+    try {
+        debugLog('state','DIAG','Test endpoint vidéo…');
+        const testRes=await apiFetch(API_BASE+'/videos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:MODEL_VIDEO,prompt:'test',mode:'text',seconds:4,size:VIDEO_DEFAULTS.size,aspect_ratio:VIDEO_DEFAULTS.aspect_ratio,n:1})},'Video Test',1);
+        const testData=await testRes.json();
+        debugLog('success','DIAG','Endpoint vidéo accessible',testData);
+        showToast('✅ API complète OK — modèles, chat, vidéo accessibles','success',4500);
+    }catch(e){
+        debugLog('warn','DIAG','Endpoint vidéo : '+(e.message||e).slice(0,150));
+        showToast('⚠️ API OK mais endpoint vidéo inaccessible — voir console','warn',6000);
+    }
+}catch(e){
+debugLog('error','DIAG','Échec du diagnostic : '+e.message,e.body||'');
+showToast('Diagnostic échoué — '+String(e.message||e).slice(0,55),'error',6000);
+}finally{
+if(btn)btn.disabled=false;
+}
+}
+
+function setupNarrationOption(){
+[['include-narration','include-narration-label'],['shorts-include-narration','shorts-include-narration-label']].forEach(([inputId,labelId])=>{
+const input=document.getElementById(inputId);
+const label=document.getElementById(labelId);
+if(!input)return;
+input.checked=!!BACKEND.tts;
+input.disabled=!BACKEND.tts;
+if(label){
+label.classList.toggle('disabled',!BACKEND.tts);
+label.title=BACKEND.tts?'Narration générée par le serveur local et gravée dans le MP4':'Lance node server.mjs sur un système avec TTS pour activer la narration';
+const span=label.querySelector('span');
+if(span&&!BACKEND.tts)span.textContent='🔇 Narration TTS indisponible — lance server.mjs';
+}
+});
+}
+
+async function apiFetch(url,options,label,maxAttempts){
+options=options||{};label=label||'API';maxAttempts=(typeof maxAttempts==='number'&&maxAttempts>0)?maxAttempts:6;
+let lastErr=null;
+for(let attempt=0;attempt<maxAttempts;attempt++){
+if(state.stopRequested||state.shortsStopRequested)throw new Error('Arrêt demandé');
+const keyObj=await acquireKey(label);
+const method=options.method||'GET';
+debugLog('api','REQ '+label,method+' '+url.slice(0,80)+(keyObj?(' · clé '+keyObj.key.slice(-4)):' · relais serveur'));
+const headers=Object.assign({},options.headers||{});
+if(keyObj)headers['Authorization']='Bearer '+keyObj.key;
+const finalOptions=Object.assign({},options,{headers});
+try{
+const t0=Date.now();
+const res=await fetch(url,finalOptions);
+const dt=Date.now()-t0;
+let retryAfter=0;try{retryAfter=parseInt(res.headers.get('Retry-After')||'0',10)||0}catch(e){}
+debugLog('response','RÉP '+label,'HTTP '+res.status+' en '+dt+'ms');
+if(res.ok){if(keyObj)keyObj.errorCount=0;return res}
+
+let errorText='';try{errorText=(await res.clone().text()).slice(0,1500)}catch(e){}
+debugLog('error','ERREUR '+label,'HTTP '+res.status+' — message du serveur :',errorText);
+const err=new Error('HTTP '+res.status+' — '+errorText.slice(0,300));
+err.status=res.status;err.body=errorText;
+lastErr=err;
+
+if(res.status===401||res.status===403){
+if(keyObj){
+keyObj.errorCount=(keyObj.errorCount||0)+1;
+if(keyObj.errorCount>=3){keyObj.active=false;renderKeysStatus()}
+}
+throw err;
+}
+if(res.status===429){
+const wait=retryAfter>0?retryAfter:Math.min(120,20+attempt*15);
+if(keyObj){keyObj.cooldownUntil=Date.now()+wait*1000;renderKeysStatus()}
+await sleep(Math.min(wait*1000,5000));
+continue;
+}
+if(res.status>=500){
+const queueFull=/queue_full|queue is full/i.test(errorText);
+const waitSec=queueFull?45:Math.min(60,8+attempt*6);
+debugLog('warn','ATTENTE '+label,'Serveur saturé, nouvelle tentative dans '+waitSec+'s (essai '+(attempt+1)+'/'+maxAttempts+')');
+let r=waitSec;
+while(r>0){
+if(state.stopRequested||state.shortsStopRequested)throw new Error('Arrêt demandé');
+setStatus('File Agnes pleine — nouvel essai dans '+r+'s');
+await sleep(1000);r--;
+}
+continue;
+}
+// Toutes les autres erreurs (400, 402, 404, 422...) : inutile de réessayer
+throw err;
+}catch(e){
+if(e.message==='Arrêt demandé')throw e;
+if(e.status)throw e;
+lastErr=e;
+debugLog('error','RÉSEAU '+label,e.message||'Erreur réseau');
+await sleep(Math.min(45,4+attempt*4)*1000);
+}
+}
+throw lastErr||new Error('Tentatives épuisées pour '+label);
+}
+
+function checkJsonBalance(text) {
+    let braces = 0, brackets = 0;
+    let inString = false, escape = false;
+    for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        if (escape) { escape = false; continue; }
+        if (ch === '\\') { escape = true; continue; }
+        if (ch === '"') { inString = !inString; continue; }
+        if (inString) continue;
+        if (ch === '{') braces++;
+        else if (ch === '}') braces--;
+        else if (ch === '[') brackets++;
+        else if (ch === ']') brackets--;
+    }
+    return {
+        balanced: braces === 0 && brackets === 0 && !inString,
+        missingBraces: braces > 0 ? braces : 0,
+        missingBrackets: brackets > 0 ? brackets : 0,
+        unclosedString: inString
+    };
+}
+
+function balanceJson(text){let ob=0,ok=0,inString=false,escape=false;for(let i=0;i<text.length;i++){const ch=text[i];if(escape){escape=false;continue}if(ch==='\\'){escape=true;continue}if(ch==='"'){inString=!inString;continue}if(inString)continue;if(ch==='{')ob++;else if(ch==='}')ob--;else if(ch==='[')ok++;else if(ch===']')ok--}let r=text;if(inString)r+='"';while(ok>0){r+=']';ok--}while(ob>0){r+='}';ob--}return r.replace(/,\s*([}\]])/g,'$1')}
+function repairJson(text){if(!text)return null;let c=String(text).trim();const fm=c.match(/```(?:json)?\s*([\s\S]*?)```/);if(fm)c=fm[1].trim();const fb=c.indexOf('{');if(fb<0)return null;c=c.slice(fb);const lb=c.lastIndexOf('}');if(lb>0)c=c.slice(0,lb+1);let out='';let inString=false;let escape=false;for(let i=0;i<c.length;i++){const ch=c[i];if(escape){if('"\\/bfnrtu'.includes(ch)){out+='\\'+ch}else{out+=ch}escape=false;continue}if(ch==='\\'){escape=true;continue}if(ch==='"'){inString=!inString;out+=ch;continue}if(inString){if(ch==='\n'){out+='\\n';continue}if(ch==='\r'){out+='\\r';continue}if(ch==='\t'){out+='\\t';continue}const code=ch.charCodeAt(0);if(code<32){out+='\\u'+code.toString(16).padStart(4,'0');continue}}out+=ch}if(escape)out+='\\';if(inString)out+='"';out=out.replace(/,\s*([}\]])/g,'$1');return out}
+
+// Nettoie les chaînes (retours ligne, tabulations, échappements invalides) sans rien tronquer.
+function sanitizeJsonText(text){
+    let c=String(text||'').replace(/^\uFEFF/,'');
+    let out='',inString=false,escape=false;
+    for(let i=0;i<c.length;i++){
+        const ch=c[i];
+        if(escape){if('"\\/bfnrtu'.includes(ch))out+='\\'+ch;else out+=ch;escape=false;continue}
+        if(ch==='\\'){escape=true;continue}
+        if(ch==='"'){inString=!inString;out+=ch;continue}
+        if(inString){
+            if(ch==='\n'){out+='\\n';continue}
+            if(ch==='\r'){out+='\\r';continue}
+            if(ch==='\t'){out+='\\t';continue}
+            const code=ch.charCodeAt(0);
+            if(code<32){out+='\\u'+code.toString(16).padStart(4,'0');continue}
+        }
+        out+=ch;
+    }
+    if(escape)out+='\\';
+    if(inString)out+='"';
+    return out.replace(/,\s*([}\]])/g,'$1');
+}
+
+// Ferme les conteneurs ouverts dans le bon ordre et supprime les virgules pendantes.
+function closeJsonContainers(text){
+    let s=String(text||'').replace(/\s+$/,'').replace(/,\s*$/,'');
+    const stack=[];let inString=false,escape=false;
+    for(let i=0;i<s.length;i++){
+        const ch=s[i];
+        if(escape){escape=false;continue}
+        if(ch==='\\'){escape=true;continue}
+        if(ch==='"'){inString=!inString;continue}
+        if(inString)continue;
+        if(ch==='{'||ch==='[')stack.push(ch);
+        else if(ch==='}'||ch===']')stack.pop();
+    }
+    if(escape)s+='\\';
+    if(inString)s+='"';
+    while(stack.length){const open=stack.pop();s+=open==='{'?'}':']'}
+    return s.replace(/,\s*([}\]])/g,'$1');
+}
+
+// Répare un JSON tronqué : fermeture directe, puis coupe aux virgules/accolades précédentes.
+function repairTruncatedJson(text){
+    const base=sanitizeJsonText(text).trim();
+    if(!base)return [];
+    const out=[closeJsonContainers(base)];
+    const commas=[],closers=[];
+    let inString=false,escape=false;
+    for(let i=0;i<base.length;i++){
+        const ch=base[i];
+        if(escape){escape=false;continue}
+        if(ch==='\\'){escape=true;continue}
+        if(ch==='"'){inString=!inString;continue}
+        if(inString)continue;
+        if(ch===',')commas.push(i);
+        else if(ch==='}'||ch===']')closers.push(i);
+    }
+    for(let k=closers.length-1;k>=0;k--){
+        out.push(closeJsonContainers(base.slice(0,closers[k]+1)));
+        if(out.length>=90)break;
+    }
+    for(let k=commas.length-1;k>=0;k--){
+        out.push(closeJsonContainers(base.slice(0,commas[k]).replace(/[,\s]+$/,'')));
+        if(out.length>=180)break;
+    }
+    return out;
+}
+
+function tryParseJson(v) {
+    if (!v) return null;
+    try {
+        const parsed = JSON.parse(v);
+        return (parsed && typeof parsed === 'object') ? parsed : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+function parseJsonCandidate(raw) {
+    if (!raw) return null;
+    const base = String(raw).trim();
+    if (!base) return null;
+    // Cas rapide : le JSON est déjà valide.
+    let parsed = tryParseJson(base);
+    if (parsed) return parsed;
+
+    const variants = [];
+    const push = (v) => { if (v && !variants.includes(v)) variants.push(v); };
+    for (const v of repairTruncatedJson(base)) push(v);
+    push(repairJson(base));
+    push(balanceJson(base));
+    // Fallback : coupe la prose après le dernier objet/tableau fermé.
+    const lastClose = Math.max(base.lastIndexOf('}'), base.lastIndexOf(']'));
+    if (lastClose > 0) push(closeJsonContainers(base.slice(0, lastClose + 1)));
+    for (const v of variants) {
+        parsed = tryParseJson(v);
+        if (parsed) return parsed;
+    }
+    return null;
+}
+
+function extractJson(text) {
+    if (!text) {
+        debugLog('error', 'PARSE', 'Réponse vide');
+        return null;
+    }
+    const c = String(text).trim();
+    const candidates = [];
+
+    // Blocs ```json ... ``` (même non fermés).
+    const fenceRe = /```(?:json)?\s*([\s\S]*?)```/gi;
+    let m;
+    while ((m = fenceRe.exec(c)) !== null) {
+        if (m[1] && m[1].trim()) candidates.push(m[1].trim());
+    }
+    const unfenced = c.replace(/```(?:json)?/gi, '').replace(/```/g, '').trim();
+    candidates.push(unfenced);
+    candidates.push(c);
+
+    // À partir du premier { (et du premier [ en secours).
+    for (const base of [unfenced, c]) {
+        const fb = base.indexOf('{');
+        if (fb >= 0) candidates.push(base.slice(fb));
+        const fa = base.indexOf('[');
+        if (fa >= 0) candidates.push(base.slice(fa));
+    }
+
+    const seen = new Set();
+    for (const cand of candidates) {
+        if (!cand || seen.has(cand)) continue;
+        seen.add(cand);
+        const parsed = parseJsonCandidate(cand);
+        if (parsed) {
+            if (Array.isArray(parsed) && parsed.length === 1 && parsed[0] && typeof parsed[0] === 'object') {
+                debugLog('success', 'PARSE', 'JSON parsé dans un tableau (1 objet)');
+                return parsed[0];
+            }
+            debugLog('success', 'PARSE', 'JSON parsé avec succès (' + cand.length + ' caractères)');
+            return parsed;
+        }
+    }
+
+    const balance = checkJsonBalance(c);
+    debugLog('error', 'PARSE', 'JSON illisible après réparation — accolades manquantes: ' + balance.missingBraces + ', crochets manquants: ' + balance.missingBrackets + ', chaîne ouverte: ' + balance.unclosedString + ', longueur: ' + c.length);
+    return null;
+}
+
+// Extrait le script ; si le JSON est vraiment cassé, demande une réparation à Agnes.
+async function extractScriptWithRepair(content, label, totalScenes) {
+    let parsed = extractJson(content);
+    const countScenes = (p) => (p && Array.isArray(p.scenes)) ? p.scenes.length : 0;
+    const minimum = Math.max(2, Number(totalScenes) || 0);
+    if (parsed && countScenes(parsed) >= minimum) return parsed;
+    if (parsed) {
+        debugLog('warn', 'PARSE', label + ' : seulement ' + countScenes(parsed) + ' scène(s) sur ' + minimum + ' attendues — réparation demandée');
+    } else {
+        debugLog('warn', 'PARSE', label + ' : nouvelle tentative via une requête de réparation JSON');
+    }
+    const original = parsed;
+    const repairPrompt = [
+        'Le JSON ci-dessous est invalide ou tronqué.',
+        'Réécris-le en JSON STRICT et COMPLET, sans commentaire ni markdown.',
+        'Conserve la même structure et le même contenu. Il doit contenir exactement ' + totalScenes + ' objets dans "scenes".',
+        'Chaque scène doit être complète (character, decor, action, shots, dialogue).',
+        '',
+        String(content).slice(0, 60000)
+    ].join('\n');
+    try {
+        const fixed = await callChatCompletion(
+            'Tu es un réparateur de JSON. Tu réponds uniquement avec un objet JSON valide, sans texte autour.',
+            repairPrompt,
+            label + ' réparation',
+            24000,
+            0.1
+        );
+        parsed = extractJson(fixed);
+        if (parsed) {
+            debugLog('success', 'PARSE', label + ' : JSON réparé par Agnes');
+            return parsed;
+        }
+        return original;
+    } catch (e) {
+        debugLog('error', 'PARSE', label + ' : réparation impossible — ' + e.message);
+        return original;
+    }
+}
+
+async function generateImage(prompt){
+const body={model:MODEL_IMAGE,prompt,n:1,size:'1024x1024',ratio:'9:16'};
+const res=await apiFetch(API_BASE+'/images/generations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},'Image',4);
+const rawText=await res.text();
+let data=null;
+try{data=JSON.parse(rawText)}catch(e){debugLog('error','IMAGE-RAW','Réponse non JSON',rawText.slice(0,2000));throw new Error('Réponse image non JSON')}
+debugLog('info','IMAGE-RAW','Réponse brute image',rawText.slice(0,2000));
+if(data&&data.error)throw new Error('AGNES image : '+(typeof data.error==='string'?data.error:(data.error.message||JSON.stringify(data.error))));
+const item=(data&&data.data&&data.data[0])||data;
+if(!item)throw new Error('Pas d\'image');
+if(item.url)return item.url;
+if(item.b64_json)return'data:image/png;base64,'+item.b64_json;
+throw new Error('Format image inconnu : '+rawText.slice(0,200));
+}
+
+async function createVideoTask(prompt, imageUrl, duration) {
+    const seconds = Math.max(4, Math.min(12, Math.round(duration)));
+    const body = {
+        model: MODEL_VIDEO,
+        prompt: prompt,
+        mode: 'text',
+        seconds: seconds,  // nombre, pas string
+        size: VIDEO_DEFAULTS.size,
+        aspect_ratio: VIDEO_DEFAULTS.aspect_ratio,
+        n: VIDEO_DEFAULTS.n
+    };
+    if (imageUrl) {
+        body.mode = 'keyframe';
+        body.first_frame = imageUrl;
+    }
+    const res = await apiFetch(API_BASE + '/videos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    }, 'Video Task', 20);
+    const rawText = await res.text();
+    let data = null;
+    try {
+        data = JSON.parse(rawText);
+    } catch (e) {
+        debugLog('error', 'VIDEO', 'Réponse non JSON à la création (' + rawText.length + ' car.)', rawText.slice(0, 3000));
+        throw new Error('Réponse vidéo non JSON : ' + rawText.slice(0, 200));
+    }
+    debugLog('info', 'VIDEO-RAW', 'Création de tâche — réponse brute', rawText.slice(0, 4000));
+    if (data && data.error) {
+        const em = typeof data.error === 'string' ? data.error : (data.error.message || JSON.stringify(data.error));
+        throw new Error('AGNES vidéo : ' + em);
+    }
+    const nested = (data && data.data && typeof data.data === 'object' && !Array.isArray(data.data)) ? data.data : null;
+    const videoId = data.video_id || data.id || data.task_id || (nested && (nested.video_id || nested.id || nested.task_id));
+    if (!videoId) {
+        debugLog('error', 'VIDEO', 'Réponse sans identifiant de vidéo', data);
+        throw new Error('Pas de video_id. Réponse: ' + rawText.slice(0, 250));
+    }
+    const status = data.status || (nested && nested.status) || 'queued';
+    debugLog('success', 'VIDEO', 'Tâche créée : ' + videoId + ' (statut ' + status + ')');
+    return { compositeId: String(videoId), raw: data, status };
+}
+
+// Essaie le mode texte, puis bascule en keyframe si l'API le refuse.
+async function createVideoTaskWithFallback(prompt, scene, duration) {
+    try {
+        return await createVideoTask(prompt, null, duration);
+    } catch (e) {
+        const text = ((e && e.message) || '') + ' ' + ((e && e.body) || '');
+        const canFallback = (e && e.status === 400) || /image|keyframe|first_frame|mode|frame/i.test(text);
+        if (!canFallback) throw e;
+        debugLog('warn', 'VIDEO', 'Mode texte refusé — tentative keyframe : ' + e.message);
+        try {
+            const imgUrl = await generateImage(buildImageFallbackPrompt(scene));
+            return await createVideoTask(prompt, imgUrl, duration);
+        } catch (e2) {
+            throw new Error('Création vidéo impossible — texte : ' + e.message + ' | keyframe : ' + e2.message);
+        }
+    }
+}
+
+// Récupère le MP4 via l'endpoint authentifié quand l'API ne renvoie pas d'URL directe.
+async function fetchVideoContentUrl(videoId) {
+    // Essaie plusieurs endpoints possibles
+    const endpoints = [
+        API_BASE + '/videos/' + encodeURIComponent(videoId) + '/content',
+        API_BASE.replace('/v1', '') + '/v1/videos/' + encodeURIComponent(videoId) + '/content',
+        POLL_BASE.replace('/agnesapi', '') + '/videos/' + encodeURIComponent(videoId) + '/content'
+    ];
+    
+    let lastError = null;
+    for (const endpoint of endpoints) {
+        try {
+            const res = await apiFetch(endpoint, { method: 'GET' }, 'Video Content', 1);
+            const blob = await res.blob();
+            if (!blob || !blob.size) throw new Error('Contenu vidéo vide');
+            debugLog('success', 'VIDEO', 'Contenu vidéo récupéré via ' + endpoint + ' (' + Math.round(blob.size / 1024) + ' Ko)');
+            return URL.createObjectURL(blob);
+        } catch (e) {
+            lastError = e;
+            debugLog('warn', 'VIDEO', 'Endpoint ' + endpoint + ' échoué : ' + e.message);
+            continue;
+        }
+    }
+    throw lastError || new Error('Impossible de récupérer le contenu vidéo');
+}
+
+const POLL_URL_BUILDERS = [
+    { name: 'agnesapi', build: (id) => POLL_BASE + '?video_id=' + encodeURIComponent(id) + '&model_name=' + encodeURIComponent(MODEL_VIDEO) },
+    { name: 'v1-rest', build: (id) => API_BASE + '/videos/' + encodeURIComponent(id) },
+    // Fallback supplémentaire : certains endpoints Agnes renvoient le statut sur /v1/videos/{id}
+    { name: 'v1-videos', build: (id) => API_BASE.replace('/v1', '') + '/v1/videos/' + encodeURIComponent(id) }
+];
+
+const COMPLETED_STATUSES = ['completed', 'succeeded', 'done', 'success', 'finished'];
+const FAILED_STATUSES = ['failed', 'error', 'cancelled', 'canceled', 'failure'];
+
+async function pollVideo(videoId, onProgress, workingBuilderRef) {
+  const progress = (typeof onProgress === 'function') ? onProgress : () => {};
+
+  let rem = VIDEO_FIRST_POLL_DELAY_SEC;
+  while (rem > 0) {
+    if (state.stopRequested || state.shortsStopRequested) throw new Error('Arrêt demandé');
+    progress('Préparation — ' + rem + 's');
+    await sleep(1000);
+    rem--;
+  }
+
+  const builders = workingBuilderRef.value
+    ? [workingBuilderRef.value, ...POLL_URL_BUILDERS.filter(b => b !== workingBuilderRef.value)]
+    : POLL_URL_BUILDERS;
+
+  for (let attempt = 0; attempt < VIDEO_MAX_POLL_ATTEMPTS; attempt++) {
+    if (state.stopRequested || state.shortsStopRequested) throw new Error('Arrêt demandé');
+
+    if (attempt > 0) {
+      const idx = Math.min(attempt - 1, VIDEO_POLL_INTERVALS.length - 1);
+      let r = VIDEO_POLL_INTERVALS[idx];
+      while (r > 0) {
+        if (state.stopRequested || state.shortsStopRequested) throw new Error('Arrêt demandé');
+        progress('Création — ' + r + 's');
+        await sleep(1000);
+        r--;
+      }
+    }
+
+    for (const builder of builders) {
+      try {
+        const res = await apiFetch(builder.build(videoId), { method: 'GET' }, 'Polling', 2);
+        const rawText = await res.text();
+        let d = null;
+        try {
+          d = JSON.parse(rawText);
+        } catch (e) {
+          debugLog('warn', 'POLL-RAW', builder.name + ' : réponse non JSON', rawText.slice(0, 2000));
+          continue;
+        }
+        const nested = (d && d.data && typeof d.data === 'object' && !Array.isArray(d.data)) ? d.data : null;
+        const status = String(d.status || (nested && nested.status) || d.state || (nested && nested.state) || '').toLowerCase();
+        const pct = Number(d.progress ?? (nested && nested.progress) ?? 0) || 0;
+        const errorObj = d.error || (nested && nested.error);
+        const errorMessage = typeof errorObj === 'string'
+          ? errorObj
+          : (errorObj && (errorObj.message || errorObj.msg)) || d.message || (nested && nested.message) || '';
+        // Cherche l'URL dans TOUS les champs possibles
+        const videoUrl = d.url || (nested && nested.url) || d.video_url || (nested && nested.video_url) ||
+          (d.output && d.output.url) || (nested && nested.output && nested.output.url) ||
+          (d.metadata && d.metadata.url) || (nested && nested.metadata && nested.metadata.url) ||
+          (d.result && d.result.url) || (nested && nested.result && nested.result.url) ||
+          (d.download_url) || (nested && nested.download_url) ||
+          (d.file && d.file.url) || (nested && nested.file && nested.file.url);
+
+        // Ne verrouille le builder que sur une réponse réellement exploitable.
+        const recognized = !!(status || videoUrl || pct > 0 || d.video_id || (nested && nested.video_id) || d.task_id || d.id || d.object === 'video');
+        if (recognized) workingBuilderRef.value = builder;
+
+        if (status || pct || videoUrl) {
+          progress(status ? ('Statut : ' + status + (pct ? ' — ' + pct + '%' : '')) : ('Création — ' + pct + '%'));
+        }
+
+        // Cas 1 : URL présente ET statut terminé (ou pas de statut = terminé implicite)
+        if (videoUrl && (!status || COMPLETED_STATUSES.includes(status))) {
+          debugLog('info', 'POLL-RAW', 'Vidéo terminée — réponse brute (URL=' + videoUrl.slice(0, 120) + '…)', rawText.slice(0, 3000));
+          debugLog('success', 'VIDEO', 'Vidéo terminée : ' + videoId);
+          return videoUrl;
+        }
+
+        // Cas 2 : Statut terminé sans URL → fallback /content
+        if (COMPLETED_STATUSES.includes(status)) {
+          debugLog('warn', 'POLL-RAW', 'Vidéo terminée sans URL — réponse brute', rawText.slice(0, 3000));
+          try {
+            return await fetchVideoContentUrl(videoId);
+          } catch (e) {
+            throw new Error('Vidéo terminée mais URL absente (fallback contenu : ' + e.message + ')');
+          }
+        }
+
+        // Cas 3 : Échec explicite
+        if (FAILED_STATUSES.includes(status)) {
+          debugLog('error', 'POLL-RAW', 'Échec vidéo (' + status + ')', rawText.slice(0, 3000));
+          throw new Error('Échec vidéo (' + status + ') : ' + (errorMessage || 'raison inconnue'));
+        }
+
+        break; // réponse reconnue : on attend le prochain poll
+      } catch (e) {
+        if (e.message === 'Arrêt demandé') throw e;
+        if (e.message && (e.message.startsWith('Échec vidéo') || e.message.startsWith('Vidéo terminée'))) throw e;
+        if (e.status === 401 || e.status === 403) throw e;
+        debugLog('warn', 'POLL', builder.name + ' : ' + (e.message || 'erreur') + ' — builder suivant');
+        continue;
+      }
+    }
+  }
+  throw new Error('Délai maximal dépassé pour la vidéo ' + videoId + ' (essayé ' + VIDEO_MAX_POLL_ATTEMPTS + ' fois)');
+}
+
+function buildScriptPrompt(lang){
+const isEN=lang==='en';
+const dayData=PLANNER_30.find(d=>d.day===state.currentDay);
+const themeLabelsFR={drama:'un drame sentimental',mystere:'un mystère',comedie:'une comédie absurde',aventure:'une aventure',quotidien:'le quotidien',revue:'une revue parodique'};
+const themeLabelsEN={drama:'a sentimental drama',mystere:'a mystery',comedie:'an absurd comedy',aventure:'an adventure',quotidien:'everyday life',revue:'a parody news report'};
+const themeLabel=isEN?(themeLabelsEN[state.jtTheme]||'a drama'):(themeLabelsFR[state.jtTheme]||'un drame');
+const topicsBlock=state.topics.map((t,i)=>(i+1)+'. « '+t+' »').join('\n');
+const charsBlock=state.selectedCharacters.map(id=>{const c=SERIES_CHARACTERS[id];if(!c)return'';return'- '+(isEN?c.name+' ('+c.role+'): '+c.en_description:c.name+' ('+c.role+'): '+c.physical_description)}).join('\n');
+const hookIdeasFR=['Le chaton regarde la caméra : « Tu ne devineras jamais ce qui s\'est passé. »','Le chaton chuchote : « Reste, tu vas comprendre. »','Le chaton pose une patte sur la caméra : « Écoute bien. »'];
+const hookIdeasEN=['The kitten looks at the camera: "You will never guess what happened."','The kitten whispers: "Stay, you will understand."','The kitten puts a paw on the camera: "Listen carefully."'];
+const hook=isEN?hookIdeasEN[Math.floor(Math.random()*hookIdeasEN.length)]:hookIdeasFR[Math.floor(Math.random()*hookIdeasFR.length)];
+const totalScenes=state.topics.length+2;
+const langRule=isEN?'ALL DIALOGUE MUST BE IN ENGLISH.':'TOUS LES DIALOGUES DOIVENT ÊTRE EN FRANÇAIS.';
+const titleToUse=isEN?(dayData?.title_en||'Episode '+state.currentDay):(dayData?.title_fr||'Épisode '+state.currentDay);
+return[
+'You are a screenwriter and director of a VIRAL TIKTOK SERIES — Episode '+state.currentDay+' of 30 — format 9:16 vertical, designed for the Creator Rewards program (videos > 1 minute).',
+'Theme: '+themeLabel+'.',
+'Title: « '+titleToUse+' ».',
+'LANGUAGE: '+(isEN?'ENGLISH':'FRENCH')+' — '+langRule,
+'',
+'TOPICS (one per report, in order):',
+topicsBlock,
+'',
+'RECURRING CHARACTERS FROM THE SERIES (use ALL of them exactly as described):',
+charsBlock,
+'',
+'STRUCTURE:',
+'- SCENE 1 (plateau, hook): the presenter says: "'+hook+'"',
+'- SCENES 2 to '+(state.topics.length+1)+' (reports): each scene reveals a new element.',
+'- FINAL SCENE (plateau): open question for comments + cliffhanger.',
+'',
+'STYLE: Wes Anderson — perfect symmetry, 35mm film grain, pastel palette, deadpan expressions.',
+'MONTAGE: 3 shots per scene with HARD CUTS (wide → medium → close-up).',
+'PALETTE: '+state.palette.label+' → '+state.palette.colors.join(', '),
+'DURATION: '+state.sceneDurationSec+' seconds per scene. Total: '+(totalScenes*state.sceneDurationSec)+'s.',
+'',
+'STRICT JSON RULES: single-line strings, keys in double quotes, no trailing commas, no markdown fences, no commentary.',
+'OUTPUT: return ONLY the complete JSON object, with exactly '+totalScenes+' complete scene objects. Never truncate a scene.',
+'',
+'FORMAT:',
+'{',
+'  "title": "'+titleToUse.replace(/"/g,'')+'",',
+'  "episode_number": '+state.currentDay+',',
+'  "language": "'+lang+'",',
+'  "hook_line": "...",',
+'  "scenes": [',
+'    {"scene_number":1,"type":"plateau","is_hook":true,"character":{"name":"...","physical_description":"...","cat_face":"...","helmet":"...","outfit":"..."},"decor":"...","action":"...","shots":[{"shot_number":1,"camera":{"type":"wide","movement":"locked-off","framing":"centered wide"},"description":"..."},{"shot_number":2,"camera":{"type":"medium","movement":"slow dolly-in","framing":"centered medium"},"description":"..."},{"shot_number":3,"camera":{"type":"close-up","movement":"locked-off","framing":"centered close-up"},"description":"..."}],"dialogue":{"speaker":"...","line_fr":"..."},"text_overlay_fr":"LE JT DES CHATONS","duration_seconds":'+state.sceneDurationSec+'}',
+'  ]',
+'}'
+].join('\n');
+}
+
+function buildVideoPrompt(scene,script,lang){
+const sceneChar=scene.character||{};
+const charName=sceneChar.name||'Chaton';
+const charDesc=sceneChar.physical_description||'cute kawaii humanoid kitten';
+const isPlateau=(scene.type==='plateau'||scene.scene_number===1||scene.scene_number===(script.scenes.length));
+const isHook=!!scene.is_hook;
+const spokenLine=(scene.dialogue&&scene.dialogue.line_fr)?scene.dialogue.line_fr:'';
+const shots=Array.isArray(scene.shots)?scene.shots:[];
+let montageBlock='';
+if(shots.length){montageBlock='MONTAGE — '+shots.length+' SHOTS WITH HARD CUTS:\n'+shots.map((sh,i)=>{const c=sh.camera||{};return'  SHOT '+(i+1)+' — '+(c.type||'symmetric')+' : '+(sh.description||'')}).join('\n')}
+else{montageBlock='MONTAGE — 3 SHOTS: wide → medium → close-up.'}
+const langLabel=lang==='en'?'ENGLISH':'FRENCH';
+return[
+'TIKTOK VIRAL CINEMATIC SHORT — 9:16 VERTICAL — WES ANDERSON STYLE, 35MM FILM.',
+'Episode '+state.currentDay+' · Language: '+langLabel,
+'FORMAT: vertical 9:16, '+state.sceneDurationSec+' seconds, retention-optimized.',
+'CAMERA: perfect bilateral symmetry, dead-center framing.',
+'EDITING: HARD CUTS. 35mm film grain, warm halation.',
+'PALETTE: '+state.palette.label+' → '+state.palette.colors.join(', ')+'.',
+'CHARACTERS: CUTE KAWAII HUMANOID KITTENS with retro helmets and pastel outfits.',
+'',
+isPlateau?'PRESENTER — SAME CHARACTER THROUGHOUT:':'FEATURED CHARACTER:',
+'  '+charName+' — '+charDesc,
+'',
+'SCENE '+(scene.scene_number||'?')+' — '+String(scene.type||'').toUpperCase()+(isHook?' — HOOK (first 2 seconds)':''),
+'DECOR: '+(scene.decor||''),
+'ACTION: '+(scene.action||''),
+spokenLine?('SPOKEN LINE ('+langLabel+'): "'+spokenLine+'"'):'',
+'',
+montageBlock,
+'',
+isHook?'CRITICAL: hook scene. Look directly at camera within first 2 seconds.':'',
+'CONSTRAINTS: 35mm grain, hard cuts, symmetry, pastel, no text, vertical 9:16.'
+].filter(Boolean).join('\n');
+}
+
+function buildImageFallbackPrompt(scene){
+const sceneChar=scene.character||{};
+return[
+'Wes Anderson TikTok keyframe, 35mm film, pastel palette, vertical 9:16.',
+'Symmetry, dead-center framing.',
+'PALETTE: '+state.palette.colors.join(', '),
+'CHARACTER: '+(sceneChar.name||'')+' — '+(sceneChar.physical_description||''),
+'SCENE: '+(scene.decor||'')+' — '+(scene.action||''),
+'No text, vertical 9:16, film grain.'
+].join('\n');
+}
+
+function validateScript(script, label) {
+    if (!script || typeof script !== 'object') {
+        debugLog('error', 'VALIDATE', label + ' : script absent ou non-objet');
+        return { valid: false, reason: 'Le script reçu n\'est pas un objet.' };
+    }
+    if (!Array.isArray(script.scenes) || script.scenes.length === 0) {
+        debugLog('error', 'VALIDATE', label + ' : champ "scenes" absent, vide ou non-tableau');
+        return { valid: false, reason: 'Le champ "scenes" est absent ou vide.' };
+    }
+    const warnings = [];
+    script.scenes.forEach((sc, i) => {
+        const issues = [];
+        if (!sc || typeof sc !== 'object') issues.push('scène non-objet');
+        else {
+            if (!sc.character || !sc.character.name) issues.push('character');
+            if (!sc.dialogue || !(sc.dialogue.line_fr || sc.dialogue.line_en || sc.dialogue.line)) issues.push('dialogue');
+            if (!Array.isArray(sc.shots) || sc.shots.length === 0) issues.push('shots');
+        }
+        if (issues.length) warnings.push('Scène ' + (i + 1) + ' : ' + issues.join(', '));
+    });
+    if (warnings.length) {
+        debugLog('warn', 'VALIDATE', label + ' : ' + warnings.length + ' scène(s) à compléter (normalisées)', warnings.slice(0, 8));
+    }
+    debugLog('success', 'VALIDATE', label + ' : ' + script.scenes.length + ' scènes exploitables');
+    return { valid: true, warnings };
+}
+
+function normalizeScript(script,topics,selectedChars){
+if(!script||typeof script!=='object')return null;
+let scenes=Array.isArray(script.scenes)?script.scenes:(Array.isArray(script.scenes_list)?script.scenes_list:null);
+if(!scenes)return null;
+scenes=scenes.filter(sc=>sc&&typeof sc==='object'&&!Array.isArray(sc));
+if(scenes.length===0)return null;
+topics=Array.isArray(topics)?topics:[];
+const totalScenes=topics.length+2;
+if(scenes.length>totalScenes)scenes=scenes.slice(0,totalScenes);
+const charIds=(Array.isArray(selectedChars)&&selectedChars.length)?selectedChars:['marcel'];
+const isEN=(script.language==='en')||(state.lang==='en');
+const fallbackChar=()=>{
+const charId=charIds[Math.floor(Math.random()*charIds.length)]||charIds[0]||'marcel';
+return SERIES_CHARACTERS[charId]||SERIES_CHARACTERS.marcel;
+};
+scenes.forEach((sc,i)=>{
+sc.scene_number=Number(sc.scene_number)||(i+1);
+if(!sc.type)sc.type=(i===0||i===scenes.length-1)?'plateau':'report';
+if(!sc.character||typeof sc.character!=='object'){
+const c=fallbackChar();
+sc.character={name:c.name,cat_face:c.breed,helmet:'casque rétro',outfit:'tenue pastel',physical_description:c.physical_description};
+}else if(!sc.character.name){
+const c=fallbackChar();
+sc.character.name=c.name;
+if(!sc.character.physical_description)sc.character.physical_description=c.physical_description;
+}
+if(!sc.character.physical_description){
+const found=Object.values(SERIES_CHARACTERS).find(c=>String(c.name).toLowerCase()===String(sc.character.name||'').toLowerCase());
+sc.character.physical_description=found?found.physical_description:'cute kawaii humanoid kitten with a retro helmet and pastel outfit, deadpan expression';
+if(!sc.character.cat_face)sc.character.cat_face=found?found.breed:'kitten';
+}
+let dlg=sc.dialogue;
+let line='';
+if(typeof dlg==='string')line=dlg;
+else if(dlg&&typeof dlg==='object')line=dlg.line_fr||dlg.line_en||dlg.line||dlg.text||dlg.fr||dlg.en||'';
+if(!line||String(line).trim().length<3){
+if(sc.type==='plateau')line=sc.is_hook?(isEN?'You will never guess what happened…':'Tu ne devineras jamais ce qui s\'est passé…'):(isEN?'To be continued…':'À suivre…');
+else line=(topics[i-1]||(isEN?'A new clue appears.':'Un nouvel indice apparaît.')); 
+if(line.length>110)line=line.slice(0,108)+'…';
+}
+if(!dlg||typeof dlg!=='object')dlg={};
+sc.dialogue=Object.assign({},dlg,{speaker:dlg.speaker||sc.character.name,line_fr:line});
+if(!sc.dialogue.line_en)sc.dialogue.line_en=line;
+if(!Array.isArray(sc.shots))sc.shots=[];
+sc.shots=sc.shots.filter(sh=>sh&&typeof sh==='object').map((sh,j)=>({shot_number:sh.shot_number||(j+1),camera:(sh.camera&&typeof sh.camera==='object')?sh.camera:{type:['wide','medium','close-up'][j]||'symmetric',movement:'locked-off',framing:'centered'},description:sh.description||sh.action||('Shot '+(j+1))}));
+if(sc.shots.length===0){sc.shots=[{shot_number:1,camera:{type:'wide',movement:'locked-off',framing:'centered wide'},description:'wide shot'},{shot_number:2,camera:{type:'medium',movement:'slow dolly-in',framing:'centered medium'},description:'medium shot'},{shot_number:3,camera:{type:'close-up',movement:'locked-off',framing:'centered close-up'},description:'close-up'}]}
+if(!sc.decor)sc.decor=isEN?'symmetric pastel Wes Anderson set':'décor pastel symétrique, style Wes Anderson';
+if(!sc.action)sc.action=isEN?'deadpan action, centered framing':'action silencieuse, cadrage centré';
+if(!sc.duration_seconds)sc.duration_seconds=(state.sceneDurationSec||8);
+if(typeof sc.is_hook!=='boolean')sc.is_hook=(i===0);
+});
+script.scenes=scenes;
+if(!script.title)script.title=isEN?('Episode '+state.currentDay):('Épisode '+state.currentDay);
+if(!script.hook_line)script.hook_line=(scenes[0]&&scenes[0].dialogue&&scenes[0].dialogue.line_fr)||'';
+if(!script.episode_number)script.episode_number=state.currentDay;
+if(!script.language)script.language=isEN?'en':'fr';
+return script;
+}
+
+function buildShortsScriptPrompt(){
+const isEN=state.shortsLang==='en';
+const themeLabelsFR={drama:'un drame',mystere:'un mystère',comedie:'une comédie',aventure:'une aventure',quotidien:'le quotidien',revue:'une revue parodique'};
+const themeLabelsEN={drama:'a drama',mystere:'a mystery',comedie:'a comedy',aventure:'an adventure',quotidien:'everyday life',revue:'a parody news report'};
+const themeLabel=isEN?(themeLabelsEN[state.shortsTheme]||'a drama'):(themeLabelsFR[state.shortsTheme]||'un drame');
+const topicsBlock=state.shortsTopics.map((t,i)=>(i+1)+'. « '+t+' »').join('\n');
+const charsBlock=state.selectedCharacters.map(id=>{const c=SERIES_CHARACTERS[id];if(!c)return'';return'- '+(isEN?c.name+': '+c.en_description:c.name+': '+c.physical_description)}).join('\n');
+const totalScenes=state.shortsTopics.length+2;
+const duration=totalScenes*state.shortsSceneDurationSec;
+const langLabel=isEN?'ENGLISH':'FRENCH';
+const langRule=isEN?'ALL DIALOGUE IN ENGLISH.':'TOUS LES DIALOGUES EN FRANÇAIS.';
+return[
+'You are a YouTube Shorts writer and director — the Short is '+duration+' seconds, vertical 9:16, optimized for YouTube algorithm.',
+'Theme: '+themeLabel+'.',
+'Title: « '+state.shortsTitle+' ».',
+'LANGUAGE: '+langLabel+' — '+langRule,
+'',
+'TOPICS:',
+topicsBlock,
+'',
+'CHARACTERS:',
+charsBlock,
+'',
+'YOUTUBE SHORTS SPECIFICS (different from TikTok):',
+'- HOOK in the FIRST 1 SECOND (visual + spoken).',
+'- PERFECT LOOP: the final frame must visually flow back to the first frame.',
+'- NO long intro. Straight to the action.',
+'',
+'STYLE: Wes Anderson — perfect symmetry, 35mm film grain, pastel palette, deadpan.',
+'MONTAGE: 3 shots per scene, HARD CUTS (wide → medium → close-up).',
+'PALETTE: '+state.palette.label+' → '+state.palette.colors.join(', '),
+'DURATION: '+state.shortsSceneDurationSec+' seconds per scene.',
+'',
+'STRICT JSON: single-line strings, double-quoted keys, no trailing commas, no markdown fences, no commentary.',
+'OUTPUT: return ONLY the complete JSON object, with exactly '+totalScenes+' complete scene objects. Never truncate a scene.',
+'',
+'FORMAT:',
+'{',
+'  "title": "'+state.shortsTitle.replace(/"/g,'')+'",',
+'  "language": "'+state.shortsLang+'",',
+'  "hook_line": "...",',
+'  "loop_line": "...",',
+'  "scenes": [',
+'    {"scene_number":1,"type":"plateau","is_hook":true,"character":{"name":"...","physical_description":"...","cat_face":"...","helmet":"...","outfit":"..."},"decor":"...","action":"...","shots":[{"shot_number":1,"camera":{"type":"wide","movement":"locked-off","framing":"centered wide"},"description":"..."},{"shot_number":2,"camera":{"type":"medium","movement":"slow dolly-in","framing":"centered medium"},"description":"..."},{"shot_number":3,"camera":{"type":"close-up","movement":"locked-off","framing":"centered close-up"},"description":"..."}],"dialogue":{"speaker":"...","line_fr":"..."},"text_overlay_fr":"...","duration_seconds":'+state.shortsSceneDurationSec+'}',
+'  ]',
+'}'
+].join('\n');
+}
+
+function buildShortsVideoPrompt(scene,script){
+const sceneChar=scene.character||{};
+const charName=sceneChar.name||'Chaton';
+const charDesc=sceneChar.physical_description||'cute kawaii humanoid kitten';
+const isPlateau=(scene.type==='plateau'||scene.scene_number===1||scene.scene_number===(script.scenes.length));
+const isHook=!!scene.is_hook;
+const isFinal=scene.scene_number===script.scenes.length;
+const spokenLine=(scene.dialogue&&scene.dialogue.line_fr)?scene.dialogue.line_fr:'';
+const shots=Array.isArray(scene.shots)?scene.shots:[];
+let montageBlock='';
+if(shots.length){montageBlock='MONTAGE — '+shots.length+' SHOTS WITH HARD CUTS:\n'+shots.map((sh,i)=>{const c=sh.camera||{};return'  SHOT '+(i+1)+' — '+(c.type||'symmetric')+' : '+(sh.description||'')}).join('\n')}
+else{montageBlock='MONTAGE — 3 SHOTS.'}
+const langLabel=state.shortsLang==='en'?'ENGLISH':'FRENCH';
+return[
+'YOUTUBE SHORTS CINEMATIC — 9:16 VERTICAL — WES ANDERSON STYLE, 35MM FILM.',
+'Language: '+langLabel,
+'FORMAT: vertical 9:16, '+state.shortsSceneDurationSec+' seconds, YouTube Shorts optimized.',
+'CAMERA: perfect symmetry, dead-center framing.',
+'EDITING: HARD CUTS. 35mm film grain.',
+'PALETTE: '+state.palette.label+' → '+state.palette.colors.join(', ')+'.',
+'CHARACTERS: CUTE KAWAII HUMANOID KITTENS.',
+'',
+isPlateau?'PRESENTER — SAME CHARACTER:':'FEATURED CHARACTER:',
+'  '+charName+' — '+charDesc,
+'',
+'SCENE '+(scene.scene_number||'?')+' — '+String(scene.type||'').toUpperCase()+(isHook?' — HOOK (first 1 second)':''),
+'DECOR: '+(scene.decor||''),
+'ACTION: '+(scene.action||''),
+spokenLine?('SPOKEN LINE ('+langLabel+'): "'+spokenLine+'"'):'',
+'',
+montageBlock,
+'',
+isHook?'CRITICAL — YOUTUBE SHORTS HOOK: the very first frame must grab attention instantly.':'',
+isFinal?'CRITICAL — PERFECT LOOP: the final frame must visually flow back to the opening frame.':'',
+'CONSTRAINTS: 35mm grain, hard cuts, symmetry, pastel, no text, vertical 9:16.'
+].filter(Boolean).join('\n');
+}
+
+function loadPlannerState(){try{const raw=localStorage.getItem(PLANNER_STORAGE);if(!raw)return{completedDays:[],currentDay:1};return JSON.parse(raw)}catch(e){return{completedDays:[],currentDay:1}}}
+function savePlannerState(){try{localStorage.setItem(PLANNER_STORAGE,JSON.stringify({completedDays:state.completedDays,currentDay:state.currentDay}))}catch(e){}}
+
+function renderPlanner(){
+const grid=document.getElementById('planner-grid');if(!grid)return;
+grid.innerHTML=PLANNER_30.map(d=>{
+const isDone=state.completedDays.includes(d.day);
+const isBoth=isDone&&state.dashboard[d.day]&&(state.dashboard[d.day].tiktok_fr>0||state.dashboard[d.day].tiktok_us>0);
+const isSelected=d.day===state.currentDay;
+let cls='planner-day';
+if(isBoth)cls+=' done-both';
+else if(isDone)cls+=' done';
+if(isSelected)cls+=' selected';
+return'<div class="'+cls+'" data-day="'+d.day+'"><div class="pd-num">'+d.day+'</div><div class="pd-theme">'+esc(d.theme)+'</div></div>'
+}).join('');
+grid.querySelectorAll('.planner-day').forEach(el=>{el.addEventListener('click',()=>loadDay(parseInt(el.dataset.day,10)))});
+const badge=document.getElementById('planner-badge');if(badge)badge.textContent='Jour '+state.currentDay;
+}
+
+function loadDay(dayNum){
+const day=PLANNER_30.find(d=>d.day===dayNum);if(!day)return;
+state.currentDay=dayNum;state.jtTheme=day.theme;
+state.jtTitle=state.lang==='en'?day.title_en:day.title_fr;
+state.topics=state.lang==='en'?day.topics_en:day.topics_fr;
+state.selectedCharacters=(day.chars||[]).slice();
+document.getElementById('jt-theme').value=day.theme;
+document.getElementById('jt-title-input').value=state.jtTitle;
+document.getElementById('jt-topics-input').value=state.topics.join('\n');
+renderCharacters();renderPlanner();updatePlannerInfo();updateFormPreview();savePlannerState();
+debugLog('info','PLANNER','Jour '+dayNum+' chargé — '+state.topics.length+' sujets');
+}
+
+function updatePlannerInfo(){
+const day=PLANNER_30.find(d=>d.day===state.currentDay);
+const info=document.getElementById('planner-info');if(!info||!day)return;
+const themeLabels={drama:'💔 Drame',mystere:'🔍 Mystère',comedie:'😂 Comédie',aventure:'🗺️ Aventure',quotidien:'☕ Quotidien',revue:'📰 Revue'};
+const totalDuration=(state.topics.length+2)*state.sceneDurationSec;
+const eligible=totalDuration>=60;
+info.innerHTML='<div class="pi-title">📌 Jour '+day.day+' — '+(themeLabels[day.theme]||day.theme)+' · '+(state.lang==='en'?'English':'Français')+'</div>'+
+'<div><strong>'+esc(state.jtTitle)+'</strong></div>'+
+'<div style="margin-top:.4rem;font-size:.72rem;color:var(--dim);">'+state.topics.length+' sujets · '+(state.topics.length+2)+' scènes · <strong>'+totalDuration+'s</strong> '+(eligible?'<span style="color:var(--ok);">✓ éligible</span>':'<span style="color:var(--warn);">⚠️ ajoute un sujet</span>')+'</div>'+
+'<div style="margin-top:.3rem;font-size:.72rem;color:var(--dim);">🐱 '+state.selectedCharacters.map(id=>SERIES_CHARACTERS[id]?.name||id).join(', ')+'</div>';
+}
+
+function renderCharacters(){
+const grid=document.getElementById('characters-grid');if(!grid)return;
+const allIds=Object.keys(SERIES_CHARACTERS);
+grid.innerHTML=allIds.map(id=>{const c=SERIES_CHARACTERS[id];const sel=state.selectedCharacters.includes(id);return'<div class="char-card'+(sel?' selected':'')+'" data-char="'+id+'"><div class="cc-name">'+esc(c.name)+'</div><div class="cc-role">'+esc(c.role)+'</div><div class="cc-desc">'+esc(c.description)+'</div></div>'}).join('');
+grid.querySelectorAll('.char-card').forEach(el=>{el.addEventListener('click',()=>{const id=el.dataset.char;if(state.selectedCharacters.includes(id))state.selectedCharacters=state.selectedCharacters.filter(x=>x!==id);else state.selectedCharacters.push(id);renderCharacters();updatePlannerInfo();updateFormPreview();})});
+const badge=document.getElementById('chars-badge');if(badge)badge.textContent=state.selectedCharacters.length+' sélectionnés';
+}
+
+function updateMetrics(){
+const sceneCount=state.topics.length+2;
+const totalDuration=sceneCount*state.sceneDurationSec;
+const eligible=totalDuration>=60;
+document.getElementById('metric-duration').textContent=totalDuration+'s';
+document.getElementById('metric-scenes').textContent=sceneCount;
+const eligibleEl=document.getElementById('metric-eligible');
+eligibleEl.textContent=eligible?'✓ Oui':'✗ Non';
+eligibleEl.className='m-val '+(eligible?'ok':'warn');
+const hint=document.getElementById('eligibility-hint');
+const rpm=state.lang==='en'?'1,50–3,00 $':'0,30–0,60 €';
+if(eligible){hint.innerHTML='✅ <strong>'+totalDuration+'s > 60s</strong> — éligible Creator Rewards. RPM '+(state.lang==='en'?'US':'FR')+' estimé : '+rpm+' pour 1000 vues.'}
+else{hint.innerHTML='⚠️ <strong>'+totalDuration+'s < 60s</strong> — non éligible. Ajoute des sujets ou augmente la durée par scène.'}
+}
+
+async function loadFFmpeg() {
+    if (state.ffmpegLoaded && state.ffmpeg) return state.ffmpeg;
+    if (!FFmpeg || !toBlobURL) {
+        throw new Error('Modules FFmpeg non chargés. Lance server.mjs ou prepare-vendor.mjs, puis recharge la page.');
+    }
+    setStatus('Chargement de FFmpeg…');
+    const sources = [
+        { name: 'local', base: './vendor/ffmpeg/core' },
+        { name: 'jsdelivr', base: 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/esm' },
+        { name: 'unpkg', base: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm' }
+    ];
+    let lastError = null;
+    for (const source of sources) {
+        const ffmpeg = new FFmpeg();
+        ffmpeg.on('progress', ({ progress }) => {
+            const pct = Math.round(progress * 100);
+            const fill = document.getElementById('ass-progress-fill');
+            if (fill) fill.style.width = pct + '%';
+            const fillS = document.getElementById('shorts-ass-progress-fill');
+            if (fillS) fillS.style.width = pct + '%';
+        });
+        try {
+            await ffmpeg.load({
+                coreURL: await toBlobURL(source.base + '/ffmpeg-core.js', 'text/javascript'),
+                wasmURL: await toBlobURL(source.base + '/ffmpeg-core.wasm', 'application/wasm')
+            });
+            state.ffmpeg = ffmpeg;
+            state.ffmpegLoaded = true;
+            debugLog('success', 'FFMPEG', 'FFmpeg chargé (' + source.name + ')');
+            return ffmpeg;
+        } catch (e) {
+            lastError = e;
+            debugLog('warn', 'FFMPEG', 'Source ' + source.name + ' indisponible : ' + (e.message || e));
+        }
+    }
+    setStatus(null);
+    throw new Error('Impossible de charger FFmpeg. Lance prepare-vendor.mjs ou vérifie ta connexion. ' + ((lastError && lastError.message) || ''));
+}
+
+function sceneNarrationText(scene) {
+    if (!scene) return '';
+    const d = scene.dialogue;
+    const line = (d && (d.line_fr || d.line_en || d.line)) || scene.text_overlay_fr || '';
+    return String(line || '').replace(/\s+/g, ' ').trim().slice(0, 900);
+}
+
+function ttsFileExtension(blob) {
+    const type = (blob && blob.type) || '';
+    if (type.includes('aiff') || type.includes('aif')) return 'aiff';
+    if (type.includes('mpeg') || type.includes('mp3')) return 'mp3';
+    return 'wav';
+}
+
+async function fetchNarrationData(text, lang) {
+    if (!BACKEND.tts) throw new Error('TTS serveur indisponible');
+    const res = await fetch(TTS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, lang: lang === 'en' ? 'en' : 'fr' })
+    });
+    if (!res.ok) {
+        let detail = '';
+        try { detail = (await res.text()).slice(0, 200); } catch (e) {}
+        throw new Error('TTS HTTP ' + res.status + (detail ? ' — ' + detail : ''));
+    }
+    const blob = await res.blob();
+    if (!blob || !blob.size) throw new Error('TTS audio vide');
+    return { ext: ttsFileExtension(blob), data: new Uint8Array(await blob.arrayBuffer()) };
+}
+
+async function fetchVideoFile(video) {
+    if (!fetchFile) throw new Error('Module fetchFile indisponible');
+    try {
+        return await fetchFile(video.url);
+    } catch (e) {
+        if (!video.videoId) throw e;
+        debugLog('warn', 'ASSEMBLAGE', 'URL directe inaccessible (' + (e.message || e) + ') — récupération via /content');
+        const res = await apiFetch(API_BASE + '/videos/' + encodeURIComponent(video.videoId) + '/content', { method: 'GET' }, 'Video Content', 3);
+        return new Uint8Array(await res.arrayBuffer());
+    }
+}
+
+async function runFfmpeg(ffmpeg, args) {
+    const code = await ffmpeg.exec(args);
+    if (typeof code === 'number' && code !== 0) throw new Error('FFmpeg a échoué (code ' + code + ')');
+}
+
+async function assembleVideos(videos,statusEl,progressEl,downloadEl,linkEl,prefix,scenes,narrationLang,narrationCheckboxId,sceneDurationFallback){
+const entries=videos.map((video,index)=>({video,index})).filter(e=>e.video.status==='done'&&e.video.url);
+if(entries.length===0){showToast('Aucune vidéo à assembler','error');return}
+const ready=entries.map(e=>e.video);
+const sceneList=Array.isArray(scenes)?scenes:[];
+const narrationBox=narrationCheckboxId?document.getElementById(narrationCheckboxId):null;
+const includeNarration=!!(BACKEND.tts&&narrationBox&&narrationBox.checked);
+const btn=statusEl.parentElement.querySelector('.btn-assemble');
+btn.disabled=true;btn.textContent='⏳ Assemblage…';
+statusEl.className='ass-status visible';statusEl.textContent='Chargement de FFmpeg…';
+progressEl.classList.add('visible');
+progressEl.querySelector('.ass-progress-fill').style.width='0%';
+downloadEl.classList.remove('visible');
+const cleanup=new Set(['list.txt','output.mp4']);
+let activeFfmpeg=null;
+let onFfmpegLog=null;
+let sceneLog='';
+try{
+const ffmpeg=await loadFFmpeg();activeFfmpeg=ffmpeg;
+// Capture des logs FFmpeg pour mesurer la durée réelle de chaque scène.
+onFfmpegLog=({message})=>{sceneLog+=message+'\n'};
+ffmpeg.on('log',onFfmpegLog);
+const probeDuration=async(name)=>{
+sceneLog='';
+try{await ffmpeg.exec(['-i',name,'-map','0:v:0','-c','copy','-f','null','-'])}catch(e){}
+const m=sceneLog.match(/Duration:\s*(\d+):(\d+):(\d+(?:\.\d+)?)/);
+if(!m)return null;
+const d=Number(m[1])*3600+Number(m[2])*60+parseFloat(m[3]);
+return Number.isFinite(d)&&d>0?d:null;
+};
+statusEl.textContent='Téléchargement des '+ready.length+' scènes…';
+const tsNames=[],audioNames=[];
+const ttsCache=new Map();
+let ttsUsed=0,ttsFailed=0;
+for(let i=0;i<ready.length;i++){
+const tag=String(i).padStart(2,'0');
+const base='s_'+tag+'.mp4';
+cleanup.add(base);
+statusEl.textContent='Téléchargement scène '+(i+1)+'/'+ready.length+'…';
+const data=await fetchVideoFile(ready[i]);
+await ffmpeg.writeFile(base,data);
+const actualDuration=await probeDuration(base);
+const sceneObj=sceneList[entries[i].index]||{};
+const requestedDuration=Number(sceneObj.duration_seconds)||Number(sceneDurationFallback)||10;
+// On ne dépasse jamais la durée réelle de la vidéo, sinon l'audio créerait un trou
+// et décalerait les scènes suivantes dans le concat.
+const targetDuration=actualDuration?Math.min(requestedDuration,actualDuration):requestedDuration;
+let text='';
+if(includeNarration){try{text=sceneNarrationText(sceneObj)}catch(e){text=''}}
+let audioName=null;
+if(text){
+statusEl.textContent='Narration scène '+(i+1)+'/'+ready.length+'…';
+try{
+const cacheKey=(narrationLang==='en'?'en':'fr')+'|'+text;
+let audio=ttsCache.get(cacheKey);
+if(!audio){audio=await fetchNarrationData(text,narrationLang);ttsCache.set(cacheKey,audio)}
+audioName='a_'+tag+'.'+audio.ext;
+audioNames.push(audioName);cleanup.add(audioName);
+await ffmpeg.writeFile(audioName,audio.data);
+ttsUsed++;
+}catch(e){
+ttsFailed++;
+debugLog('warn','ASSEMBLAGE','Narration scène '+(i+1)+' remplacée par du silence : '+e.message);
+}
+}
+statusEl.textContent='Synchronisation audio scène '+(i+1)+'/'+ready.length+'…';
+const ts='s_'+tag+'.ts';
+tsNames.push(ts);cleanup.add(ts);
+// MPEG-TS : le concat demuxer FFmpeg.wasm gère correctement ses timestamps,
+// contrairement au concat de MP4 qui gonflait la durée (2 s -> 4 s par scène).
+if(audioName){
+await runFfmpeg(ffmpeg,['-i',base,'-i',audioName,'-filter_complex','[1:a]apad[a]','-map','0:v:0','-map','[a]','-c:v','copy','-c:a','aac','-b:a','128k','-t',String(targetDuration),'-f','mpegts',ts]);
+}else{
+await runFfmpeg(ffmpeg,['-i',base,'-f','lavfi','-i','anullsrc=r=44100:cl=stereo','-map','0:v:0','-map','1:a:0','-c:v','copy','-c:a','aac','-b:a','128k','-t',String(targetDuration),'-f','mpegts',ts]);
+}
+}
+const narrationNote=ttsUsed>0?(ttsFailed>0?' (narration partielle)':' avec narration'):'';
+statusEl.textContent='Création de la liste…';
+await ffmpeg.writeFile('list.txt',new TextEncoder().encode(tsNames.map(f=>"file '"+f+"'").join('\n')));
+statusEl.textContent=ttsUsed>0?'Assemblage avec narration (720×1280)…':'Assemblage (ré-encodage 720×1280)…';
+await runFfmpeg(ffmpeg,[
+  '-f','concat','-safe','0','-i','list.txt',
+  '-vf','scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2:color=black,fps=24,format=yuv420p',
+  '-map','0:v:0','-map','0:a:0?',
+  '-c:v','libx264','-preset','veryfast','-crf','23',
+  '-c:a','aac','-b:a','128k',
+  '-movflags','+faststart',
+  'output.mp4'
+]);
+statusEl.textContent='Lecture du fichier…';
+const outputData=await ffmpeg.readFile('output.mp4');
+const blob=new Blob([outputData.slice()],{type:'video/mp4'});
+const url=URL.createObjectURL(blob);
+linkEl.href=url;linkEl.download=prefix+'-'+Date.now()+'.mp4';
+downloadEl.classList.add('visible');
+statusEl.className='ass-status visible ok';
+statusEl.textContent='✅ Assemblé'+narrationNote+' — '+Math.round(blob.size/1024/1024*10)/10+' Mo';
+btn.disabled=false;btn.textContent='🎬 Ré-assembler';
+if(onFfmpegLog){try{ffmpeg.off('log',onFfmpegLog)}catch(e){}onFfmpegLog=null}
+for(const f of cleanup){try{await ffmpeg.deleteFile(f)}catch(e){}}
+showToast('Assemblage terminé'+(ttsUsed>0?(ttsFailed>0?' (narration partielle)':' (narration incluse)'):''),ttsFailed>0?'warn':'success');
+}catch(e){
+statusEl.className='ass-status visible err';
+statusEl.textContent='❌ Erreur : '+e.message;
+btn.disabled=false;btn.textContent='🎬 Réessayer';
+showToast('Erreur : '+e.message.slice(0,50),'error');
+if(onFfmpegLog&&activeFfmpeg){try{activeFfmpeg.off('log',onFfmpegLog)}catch(err){}}
+const ff=activeFfmpeg||state.ffmpeg;
+if(ff){for(const f of cleanup){try{await ff.deleteFile(f)}catch(err){}}}
+}
+}
+
+function updateButtons(){
+const launch=document.getElementById('launch-btn');
+const stop=document.getElementById('stop-btn');
+const bilingual=document.getElementById('launch-bilingual-btn');
+const play=document.getElementById('play-film-btn');
+const replay=document.getElementById('replay-btn');
+const assemble=document.getElementById('assemble-btn');
+const shortsLaunch=document.getElementById('shorts-launch-btn');
+const shortsAssemble=document.getElementById('shorts-assemble-btn');
+const hasKey=hasActiveKey();
+const hasVideos=state.videos.filter(v=>v.status==='done').length>0;
+const hasShortsVideos=state.shortsVideos.filter(v=>v.status==='done').length>0;
+if(launch){launch.disabled=!hasKey||state.isRunning;launch.textContent=!hasKey?'🔑 Ajoutez une clé API':(state.isRunning?'⏳ Génération…':'▶ Générer l\'épisode '+state.currentDay)}
+if(stop)stop.classList.toggle('visible',state.isRunning);
+if(bilingual){bilingual.disabled=!hasKey||state.isRunning;bilingual.textContent=state.isRunning?'⏳ Génération…':'🌐 Générer FR + EN (2 épisodes)'}
+if(play)play.disabled=!hasVideos||state.isPlayingFilm||state.isRunning;
+if(replay)replay.disabled=!hasVideos||state.isPlayingFilm||state.isRunning;
+if(assemble)assemble.disabled=!hasVideos||state.isRunning;
+if(shortsLaunch){shortsLaunch.disabled=!hasKey||state.shortsIsRunning;shortsLaunch.textContent=!hasKey?'🔑 Ajoutez une clé API':(state.shortsIsRunning?'⏳ Génération…':'▶ Générer le Short')}
+if(shortsAssemble)shortsAssemble.disabled=!hasShortsVideos||state.shortsIsRunning;
+const pb=document.getElementById('player-badge');if(pb)pb.textContent=state.videos.filter(v=>v.status==='done').length;
+document.getElementById('assembly-box').classList.toggle('hidden',!hasVideos);
+document.getElementById('shorts-assembly-box').classList.toggle('hidden',!hasShortsVideos);
+updateMetrics();
+}
+
+function renderScript(){const view=document.getElementById('script-view');if(!view)return;if(!state.script){view.textContent='Le scénario apparaîtra ici…';return}const s=state.script;let html='';html+='<div class="script-title">📖 '+esc(s.title||'')+' · Épisode '+state.currentDay+'</div>';html+='<div class="script-meta">🌐 '+((s.language||state.lang)==='en'?'English':'Français')+' · '+(s.scenes||[]).length+' scènes</div>';if(s.hook_line)html+='<div style="background:rgba(232,123,53,.08);border-left:2px solid var(--acc2);padding:.5rem .7rem;margin-bottom:.6rem;font-style:italic;color:var(--acc2);">🎣 Hook : « '+esc(s.hook_line)+' »</div>';(s.scenes||[]).forEach((sc,i)=>{html+='<div class="script-scene"><div class="sc-head">🎬 Scène '+(sc.scene_number||(i+1))+' · '+esc((sc.type||'').toUpperCase())+(sc.is_hook?' · HOOK':'')+'</div>';if(sc.character?.name)html+='<div class="sc-line"><span class="sc-label">🐱 Chat</span>'+esc(sc.character.name)+'</div>';html+='<div class="sc-line"><span class="sc-label">Décor</span>'+esc(sc.decor||'')+'</div>';if(sc.dialogue?.line_fr)html+='<div class="sc-line sc-dialogue"><span class="sc-label">🔊 Voix</span>« '+esc(sc.dialogue.line_fr)+' »</div></div>'});view.innerHTML=html;const badge=document.getElementById('script-badge');if(badge)badge.textContent=(s.scenes||[]).length+' scènes'}
+
+function renderShortsScript(){const view=document.getElementById('shorts-script-view');if(!view)return;if(!state.shortsScript){view.textContent='Le scénario Shorts apparaîtra ici…';return}const s=state.shortsScript;let html='';html+='<div class="script-title">📱 '+esc(s.title||'')+'</div>';html+='<div class="script-meta">🌐 '+((s.language||state.shortsLang)==='en'?'English':'Français')+' · '+(s.scenes||[]).length+' scènes</div>';if(s.hook_line)html+='<div style="background:rgba(232,123,53,.08);border-left:2px solid var(--acc2);padding:.5rem .7rem;margin-bottom:.6rem;font-style:italic;color:var(--acc2);">🎣 Hook (1ère seconde) : « '+esc(s.hook_line)+' »</div>';if(s.loop_line)html+='<div style="background:rgba(139,95,196,.08);border-left:2px solid var(--purple);padding:.5rem .7rem;margin-bottom:.6rem;font-style:italic;color:var(--purple-soft);">🔁 Boucle : « '+esc(s.loop_line)+' »</div>';(s.scenes||[]).forEach((sc,i)=>{html+='<div class="script-scene"><div class="sc-head">🎬 Scène '+(sc.scene_number||(i+1))+(sc.is_hook?' · HOOK':'')+'</div>';if(sc.character?.name)html+='<div class="sc-line"><span class="sc-label">🐱 Chat</span>'+esc(sc.character.name)+'</div>';html+='<div class="sc-line"><span class="sc-label">Décor</span>'+esc(sc.decor||'')+'</div>';if(sc.dialogue?.line_fr)html+='<div class="sc-line sc-dialogue"><span class="sc-label">🔊 Voix</span>« '+esc(sc.dialogue.line_fr)+' »</div></div>'});view.innerHTML=html;const badge=document.getElementById('shorts-script-badge');if(badge)badge.textContent=(s.scenes||[]).length+' scènes'}
+
+function renderVideosGeneric(videos,gridId,countId){
+const grid=document.getElementById(gridId);if(!grid)return;
+while(grid.children.length>videos.length)grid.removeChild(grid.lastChild);
+for(let i=grid.children.length;i<videos.length;i++){const card=document.createElement('div');card.className='scene-card';card.dataset.index=String(i);card.innerHTML='<div class="scene-card-header"><span class="scene-card-title">🎬 Scène '+(i+1)+'</span><span class="scene-card-status"></span></div><div class="scene-card-body"></div>';grid.appendChild(card)}
+videos.forEach((v,i)=>{
+const card=grid.children[i];if(!card)return;
+const titleEl=card.querySelector('.scene-card-title');
+const statusEl=card.querySelector('.scene-card-status');
+const bodyEl=card.querySelector('.scene-card-body');
+const titleText='🎬 Scène '+(i+1)+(v.type?' · '+v.type:'');
+if(titleEl.textContent!==titleText)titleEl.textContent=titleText;
+const newClass='scene-card '+(v.status==='done'?'done':v.status==='error'?'error':(v.status==='loading'||v.status==='pending')?'generating':'');
+if(card.className!==newClass)card.className=newClass;
+if(v.status==='done'&&v.url&&card.dataset.url!==v.url){
+statusEl.innerHTML='<span style="color:var(--ok);">✓</span>';
+bodyEl.innerHTML='';
+const video=document.createElement('video');video.src=v.url;video.controls=true;video.preload='metadata';video.setAttribute('playsinline','');bodyEl.appendChild(video);
+const dl=document.createElement('a');dl.className='scene-download';dl.href=v.url;dl.target='_blank';dl.rel='noopener';dl.setAttribute('download','scene-'+(i+1)+'.mp4');dl.textContent='⬇ Télécharger';bodyEl.appendChild(dl);
+card.dataset.url=v.url;
+}else if(v.status==='error'){statusEl.innerHTML='<span style="color:var(--err);">✕</span>';bodyEl.innerHTML='<div class="scene-placeholder" style="color:var(--err);">Erreur : '+esc(v.error||'')+'</div>'}
+else if(v.status==='stopped'){statusEl.innerHTML='<span>⏹</span>';bodyEl.innerHTML='<div class="scene-placeholder">Arrêté</div>'}
+else if(v.status!=='done'){statusEl.innerHTML='<span class="spinner-mini"></span>';bodyEl.innerHTML='<div class="scene-placeholder"><div class="spinner-mini"></div><span>'+esc(v.progress||'En attente…')+'</span></div>'}
+});
+const c=document.getElementById(countId);if(c)c.textContent=videos.filter(v=>v.status==='done').length+'/'+videos.length;
+}
+
+async function callChatCompletion(systemPrompt, userPrompt, label, maxTokens, temperature) {
+  const body = {
+    model: MODEL_TEXT,
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt }
+    ],
+    temperature: temperature ?? 0.6,
+    max_tokens: maxTokens || 24000
+  };
+  const res = await apiFetch(
+    API_BASE + '/chat/completions',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    },
+    label,
+    4
+  );
+  const data = await res.json();
+  if (data.error) {
+    throw new Error('AGNES : ' + (data.error.message || JSON.stringify(data.error)));
+  }
+  const content = data.choices?.[0]?.message?.content;
+  if (typeof content !== 'string' || !content.trim()) {
+    throw new Error('Réponse AGNES sans texte exploitable.');
+  }
+  return content;
+}
+
+async function runJT(lang){
+lang=lang||state.lang;
+const result={ok:0,total:0,errors:[],stopped:false,day:state.currentDay,lang};
+if(state.isRunning)return result;
+if(!hasActiveKey()){showToast('Ajoutez au moins une clé API','error');return result}
+if(state.selectedCharacters.length===0){showToast('Sélectionne au moins un personnage','error');return result}
+state.lang=lang;
+state.isRunning=true;state.stopRequested=false;state.script=null;state.videos=[];
+document.getElementById('section-script').classList.add('hidden');
+document.getElementById('section-videos').classList.add('hidden');
+document.getElementById('section-player').classList.add('hidden');
+document.getElementById('assembly-box').classList.add('hidden');
+document.getElementById('videos-grid').innerHTML='';
+renderScript();renderVideosGeneric([],'videos-grid','videos-count');updateButtons();
+debugLog('state','JT','Épisode '+state.currentDay+' · '+lang);
+try{
+setStatus('Étape 1/3 — Scénario…');
+const prompt=buildScriptPrompt(lang);
+const systemPrompt=lang==='en'?'You are a viral TikTok screenwriter, Wes Anderson style. Return STRICT valid JSON only. Dialogue in ENGLISH.':'Tu es scénariste TikTok viral Wes Anderson. Réponds uniquement en JSON strict valide. Dialogues en FRANÇAIS.';
+const content=await callChatCompletion(systemPrompt,prompt,'Scénario',24000,0.55);
+debugLog('info','SCÉNARIO','Réponse brute reçue, longueur: '+content.length);
+const parsed=await extractScriptWithRepair(content,'Scénario',state.topics.length+2);
+if(!parsed){
+debugRawAgnesResponse('runJT',content);
+throw new Error('JSON invalide ou tronqué. Vérifie la console pour voir la réponse brute.');
+}
+parsed.language=parsed.language||lang;
+const normalized=normalizeScript(parsed,state.topics,state.selectedCharacters);
+if(!normalized){
+debugRawAgnesResponse('runJT-normalize',content);
+throw new Error('Scénario sans scènes exploitables.');
+}
+const validation=validateScript(normalized,'runJT');
+if(!validation.valid){
+debugRawAgnesResponse('runJT-validation',content);
+throw new Error('Scénario invalide : '+validation.reason);
+}
+state.script=normalized;
+renderScript();
+document.getElementById('section-script').classList.remove('hidden');
+document.getElementById('section-script').classList.add('open');
+setStatus('Étape 2/3 — Vidéos…');
+document.getElementById('section-videos').classList.remove('hidden');
+const gen=await generateAllVideos();
+result.ok=gen.ok;result.total=gen.total;result.errors=gen.errors;
+debugLog(gen.ok===gen.total?'success':'warn','JT',gen.ok+'/'+gen.total+' scènes générées',gen.errors);
+if(gen.ok>0){
+document.getElementById('section-player').classList.remove('hidden');
+document.getElementById('section-player').classList.add('open');
+if(gen.ok>0)document.getElementById('assembly-box').classList.remove('hidden');
+}
+if(state.stopRequested){
+result.stopped=true;setStatus('Arrêté — '+gen.ok+'/'+gen.total+' scènes prêtes');await sleep(1200);setStatus(null);
+}else if(gen.ok===0){
+const firstErr=gen.errors[0]||'vérifie la console (onglet Console)';
+throw new Error('Aucune scène générée. '+firstErr);
+}else{
+const allDone=gen.ok===gen.total;
+if(allDone){
+if(!state.completedDays.includes(state.currentDay))state.completedDays.push(state.currentDay);
+savePlannerState();renderPlanner();
+}
+setStatus(allDone?'Étape 3/3 — Prêt ✦':('Étape 3/3 — '+gen.ok+'/'+gen.total+' scènes prêtes'));
+await sleep(800);setStatus(null);
+if(allDone)showToast('Épisode '+state.currentDay+' ('+lang+') prêt — '+gen.total+' scènes','success',3500);
+else showToast('Épisode partiel : '+gen.ok+'/'+gen.total+' scènes — '+(gen.errors[0]||'voir la console'),'warn',6000);
+}
+}catch(e){
+result.stopped=(e.message==='Arrêt demandé')||state.stopRequested;
+if(result.stopped){setStatus('Arrêté');await sleep(1200);setStatus(null)}
+else{result.error=e.message;debugLog('error','JT',e.message);showToast('Erreur : '+e.message.slice(0,70),'error',5000)}
+}
+state.isRunning=false;state.stopRequested=false;updateButtons();
+return result;
+}
+
+async function generateAllVideos(){
+const scenes=(state.script.scenes||[]).slice(0,state.topics.length+2);
+state.videos=[];
+for(let i=0;i<scenes.length;i++)state.videos.push({status:'pending',url:null,type:scenes[i].type||'scene',progress:'En attente…'});
+renderVideosGeneric(state.videos,'videos-grid','videos-count');
+const workerCount=1;
+const queue=scenes.map((scene,index)=>({scene,index}));
+const workers=[];
+for(let w=0;w<workerCount;w++)workers.push(videoWorker(w,queue,state.script,state.lang,state.videos,'videos-grid','videos-count'));
+await Promise.all(workers);
+if(state.stopRequested)state.videos.forEach(v=>{if(v.status==='pending'||v.status==='loading')v.status='stopped';});
+renderVideosGeneric(state.videos,'videos-grid','videos-count');
+const ok=state.videos.filter(v=>v.status==='done'&&v.url).length;
+const errors=state.videos.map((v,i)=>v.status==='error'?('Scène '+(i+1)+' : '+(v.error||'erreur inconnue')):null).filter(Boolean);
+return {ok,total:state.videos.length,errors};
+}
+
+async function videoWorker(workerId,queue,script,lang,videos,gridId,countId){
+while(queue.length>0&&!state.stopRequested){
+const task=queue.shift();if(!task)break;
+await generateOneVideo(task.scene,task.index,script,lang,videos,gridId,countId,workerId);
+}
+}
+
+async function generateOneVideo(scene,index,script,lang,videos,gridId,countId,workerId){
+if(state.stopRequested)return;
+const prompt=buildVideoPrompt(scene,script,lang);
+videos[index].status='loading';videos[index].progress='Envoi…';
+renderVideosGeneric(videos,gridId,countId);
+try{
+const ref={value:state.workingPollUrlBuilder};
+let videoId=null;
+const videoIdObj=await createVideoTaskWithFallback(prompt,scene,state.sceneDurationSec);
+videoId=videoIdObj.compositeId;videos[index].videoId=videoId;
+const videoUrl=await pollVideo(videoId,(prog)=>{videos[index].progress=prog;renderVideosGeneric(videos,gridId,countId)},ref);
+state.workingPollUrlBuilder=ref.value;
+videos[index]={status:'done',url:videoUrl,type:scene.type||'scene',videoId:videoId};renderVideosGeneric(videos,gridId,countId);
+}catch(e){
+if(e.message==='Arrêt demandé')return;
+debugLog('error','VIDEO','Scène '+(index+1)+' : '+e.message);
+videos[index]={status:'error',url:null,type:scene.type||'scene',error:e.message,videoId:videos[index].videoId||null};renderVideosGeneric(videos,gridId,countId);
+}
+}
+
+async function runBilingual(){
+if(state.isRunning)return;
+if(!hasActiveKey()){showToast('Ajoutez au moins une clé API','error');return}
+if(state.selectedCharacters.length===0){showToast('Sélectionne au moins un personnage','error');return}
+const origLang=state.lang;
+const day=state.currentDay;
+let fr=null,en=null;
+try{
+debugLog('state','BILINGUE','Épisode '+day+' — FR puis EN');
+state.lang='fr';loadDay(day);
+fr=await runJT('fr');
+if(!fr||fr.stopped){
+showToast('Bilingue arrêté après la version FR','warn',4000);
+debugLog('warn','BILINGUE','Arrêt demandé après FR — EN non lancé');
+return;
+}
+await sleep(2000);
+state.lang='en';loadDay(day);
+en=await runJT('en');
+}catch(e){
+debugLog('error','BILINGUE',e.message);
+showToast('Bilingue interrompu : '+e.message.slice(0,60),'error',5000);
+}finally{
+state.lang=origLang;
+loadDay(day);
+}
+const okFr=!!(fr&&fr.ok>0);
+const okEn=!!(en&&en.ok>0);
+if(okFr&&okEn){
+showToast('Épisodes FR + EN terminés — seul le dernier (EN) reste affiché','success',4500);
+debugLog('success','BILINGUE','FR '+fr.ok+'/'+fr.total+' · EN '+en.ok+'/'+en.total+' scènes');
+}else{
+const detail='FR '+(fr?fr.ok+'/'+fr.total:'0')+' · EN '+(en?en.ok+'/'+en.total:'0');
+showToast('Bilingue incomplet — '+detail,'warn',6000);
+debugLog('warn','BILINGUE','Résultat incomplet — '+detail);
+}
+savePlannerState();renderPlanner();
+}
+
+async function runShorts(){
+if(state.shortsIsRunning)return;
+if(!hasActiveKey()){showToast('Ajoutez au moins une clé API','error');return}
+if(state.selectedCharacters.length===0){showToast('Sélectionne au moins un personnage','error');return}
+state.shortsIsRunning=true;state.shortsStopRequested=false;
+state.shortsScript=null;state.shortsVideos=[];
+document.getElementById('section-shorts-script').classList.add('hidden');
+document.getElementById('section-shorts-videos').classList.add('hidden');
+document.getElementById('section-shorts-meta').classList.add('hidden');
+document.getElementById('shorts-assembly-box').classList.add('hidden');
+document.getElementById('shorts-videos-grid').innerHTML='';
+renderVideosGeneric([],'shorts-videos-grid','shorts-videos-count');
+document.getElementById('shorts-launch-btn').disabled=true;
+document.getElementById('shorts-stop-btn').classList.add('visible');
+debugLog('state','SHORTS','Génération Shorts '+state.shortsLang);
+try{
+setStatus('Étape 1/3 — Scénario Shorts…');
+const prompt=buildShortsScriptPrompt();
+const systemPrompt=state.shortsLang==='en'?'You are a YouTube Shorts writer. Return STRICT valid JSON only. Dialogue in ENGLISH.':'Tu es scénariste YouTube Shorts. Réponds uniquement en JSON strict valide. Dialogues en FRANÇAIS.';
+const content=await callChatCompletion(systemPrompt,prompt,'Scénario Shorts',24000,0.55);
+debugLog('info','SHORTS-SCÉNARIO','Réponse brute reçue, longueur: '+content.length);
+const parsed=await extractScriptWithRepair(content,'Scénario Shorts',state.shortsTopics.length+2);
+if(!parsed){
+debugRawAgnesResponse('runShorts',content);
+throw new Error('JSON invalide ou tronqué. Vérifie la console pour voir la réponse brute.');
+}
+parsed.language=parsed.language||state.shortsLang;
+const normalized=normalizeScript(parsed,state.shortsTopics,state.selectedCharacters);
+if(!normalized){
+debugRawAgnesResponse('runShorts-normalize',content);
+throw new Error('Scénario Shorts sans scènes exploitables.');
+}
+const validation=validateScript(normalized,'runShorts');
+if(!validation.valid){
+debugRawAgnesResponse('runShorts-validation',content);
+throw new Error('Scénario Shorts invalide : '+validation.reason);
+}
+state.shortsScript=normalized;
+renderShortsScript();
+document.getElementById('section-shorts-script').classList.remove('hidden');
+document.getElementById('section-shorts-script').classList.add('open');
+setStatus('Étape 2/3 — Vidéos Shorts…');
+document.getElementById('section-shorts-videos').classList.remove('hidden');
+const gen=await generateShortsVideos();
+if(state.shortsStopRequested){
+setStatus('Arrêté — '+gen.ok+'/'+gen.total+' scènes prêtes');await sleep(1200);setStatus(null);
+if(gen.ok>0){renderShortsMeta();document.getElementById('section-shorts-meta').classList.remove('hidden');document.getElementById('shorts-assembly-box').classList.remove('hidden');showToast('Shorts arrêté — '+gen.ok+'/'+gen.total+' scènes prêtes','warn',5000);}
+}else if(gen.ok===0){
+throw new Error('Aucune scène Shorts générée. '+(gen.errors[0]||'voir la console'));
+}else{
+setStatus('Étape 3/3 — '+(gen.ok===gen.total?'Short prêt ✦':gen.ok+'/'+gen.total+' scènes prêtes'));
+renderShortsMeta();
+document.getElementById('section-shorts-meta').classList.remove('hidden');
+document.getElementById('shorts-assembly-box').classList.remove('hidden');
+await sleep(800);setStatus(null);
+if(gen.ok===gen.total)showToast('Short prêt — '+gen.total+' scènes','success',3500);
+else showToast('Short partiel : '+gen.ok+'/'+gen.total+' scènes — '+(gen.errors[0]||'voir la console'),'warn',6000);
+}
+}catch(e){
+if(e.message==='Arrêt demandé'){setStatus('Arrêté');await sleep(1200);setStatus(null)}
+else{debugLog('error','SHORTS',e.message);showToast('Erreur : '+e.message.slice(0,60),'error')}
+}
+state.shortsIsRunning=false;state.shortsStopRequested=false;
+document.getElementById('shorts-stop-btn').classList.remove('visible');
+document.getElementById('shorts-launch-btn').disabled=false;
+updateButtons();
+}
+
+async function generateShortsVideos(){
+const scenes=(state.shortsScript.scenes||[]).slice(0,state.shortsTopics.length+2);
+state.shortsVideos=[];
+for(let i=0;i<scenes.length;i++)state.shortsVideos.push({status:'pending',url:null,type:scenes[i].type||'scene',progress:'En attente…'});
+renderVideosGeneric(state.shortsVideos,'shorts-videos-grid','shorts-videos-count');
+const workerCount=1;
+const queue=scenes.map((scene,index)=>({scene,index}));
+const workers=[];
+for(let w=0;w<workerCount;w++)workers.push(shortsVideoWorker(w,queue));
+await Promise.all(workers);
+if(state.shortsStopRequested)state.shortsVideos.forEach(v=>{if(v.status==='pending'||v.status==='loading')v.status='stopped';});
+renderVideosGeneric(state.shortsVideos,'shorts-videos-grid','shorts-videos-count');
+const ok=state.shortsVideos.filter(v=>v.status==='done'&&v.url).length;
+const errors=state.shortsVideos.map((v,i)=>v.status==='error'?('Scène '+(i+1)+' : '+(v.error||'erreur inconnue')):null).filter(Boolean);
+return {ok,total:state.shortsVideos.length,errors};
+}
+
+async function shortsVideoWorker(workerId,queue){
+while(queue.length>0&&!state.shortsStopRequested){
+const task=queue.shift();if(!task)break;
+await generateOneShortsVideo(task.scene,task.index,workerId);
+}
+}
+
+async function generateOneShortsVideo(scene,index,workerId){
+if(state.shortsStopRequested)return;
+const prompt=buildShortsVideoPrompt(scene,state.shortsScript);
+state.shortsVideos[index].status='loading';state.shortsVideos[index].progress='Envoi…';
+renderVideosGeneric(state.shortsVideos,'shorts-videos-grid','shorts-videos-count');
+try{
+const ref={value:state.shortsWorkingPollUrlBuilder};
+let videoId=null;
+const videoIdObj=await createVideoTaskWithFallback(prompt,scene,state.shortsSceneDurationSec);
+videoId=videoIdObj.compositeId;state.shortsVideos[index].videoId=videoId;
+const videoUrl=await pollVideo(videoId,(prog)=>{state.shortsVideos[index].progress=prog;renderVideosGeneric(state.shortsVideos,'shorts-videos-grid','shorts-videos-count')},ref);
+state.shortsWorkingPollUrlBuilder=ref.value;
+state.shortsVideos[index]={status:'done',url:videoUrl,type:scene.type||'scene',videoId:videoId};
+renderVideosGeneric(state.shortsVideos,'shorts-videos-grid','shorts-videos-count');
+}catch(e){
+if(e.message==='Arrêt demandé')return;
+debugLog('error','SHORTS-VIDEO','Scène '+(index+1)+' : '+e.message);
+state.shortsVideos[index]={status:'error',url:null,type:scene.type||'scene',error:e.message,videoId:state.shortsVideos[index].videoId||null};
+renderVideosGeneric(state.shortsVideos,'shorts-videos-grid','shorts-videos-count');
+}
+}
+
+function renderShortsMeta(){
+const el=document.getElementById('shorts-meta-content');if(!el)return;
+const title=document.getElementById('shorts-title-input').value;
+const desc=document.getElementById('shorts-desc-input').value;
+const tags='#Shorts #CatAnimation #AIgenerated #WesAnderson #KittenSeries';
+el.innerHTML='<div class="sm-title">📋 Métadonnées YouTube Shorts</div>'+
+'<div class="sm-field"><strong>Titre :</strong><span class="sm-val">'+esc(title)+'</span></div>'+
+'<div class="sm-field"><strong>Description :</strong><span class="sm-val">'+esc(desc).replace(/\n/g,'<br>')+'</span></div>'+
+'<div class="sm-field"><strong>Tags :</strong><span class="sm-val">'+esc(tags)+'</span></div>'+
+'<div style="margin-top:.5rem;font-size:.7rem;color:var(--dim);">💡 Copie-colle ces métadonnées dans YouTube Studio avant publication. Active le toggle "Altered content" pour signaler l\'IA.</div>';
+}
+
+function loadDashboard(){try{const raw=localStorage.getItem(DASHBOARD_STORAGE);if(!raw)return{};return JSON.parse(raw)}catch(e){return{}}}
+function saveDashboard(){try{localStorage.setItem(DASHBOARD_STORAGE,JSON.stringify(state.dashboard))}catch(e){}}
+
+function renderDashboard(){
+const cards=document.getElementById('dash-cards');if(!cards)return;
+const entries=Object.entries(state.dashboard||{}).map(([k,d])=>[parseInt(k,10),d||{}]).filter(([k])=>Number.isFinite(k));
+const active=entries.filter(([k,d])=>((d.tiktok_fr||0)+(d.tiktok_us||0)+(d.shorts||0))>0);
+const daysCompleted=active.length;
+const daysPct=Math.round(daysCompleted/30*100);
+document.getElementById('dc-days').textContent=daysCompleted+'/30';
+document.getElementById('dc-days-sub').textContent=daysPct+'%';
+let totalTikTokFR=0,totalTikTokUS=0,totalShorts=0;
+entries.forEach(([k,d])=>{totalTikTokFR+=(d.tiktok_fr||0);totalTikTokUS+=(d.tiktok_us||0);totalShorts+=(d.shorts||0);});
+const totalTikTok=totalTikTokFR+totalTikTokUS;
+document.getElementById('dc-views-tiktok').textContent=totalTikTok.toLocaleString('fr-FR');
+document.getElementById('dc-views-tiktok-sub').textContent=totalTikTok>0?('moy '+Math.round(totalTikTok/Math.max(daysCompleted,1))+'/j · FR+US'):'—';
+document.getElementById('dc-views-shorts').textContent=totalShorts.toLocaleString('fr-FR');
+document.getElementById('dc-views-shorts-sub').textContent=totalShorts>0?('moy '+Math.round(totalShorts/Math.max(daysCompleted,1))+'/j'):'—';
+const revFR=totalTikTokFR/1000*RPM.tiktok_fr;
+const revUS=totalTikTokUS/1000*RPM.tiktok_us;
+const revSh=totalShorts/1000*RPM.shorts;
+document.getElementById('dc-rev-fr').textContent=revFR.toFixed(2)+' €';
+document.getElementById('dc-rev-us').textContent=revUS.toFixed(2)+' $';
+document.getElementById('dc-rev-shorts').textContent=revSh.toFixed(2)+' $';
+const revTotalEur=revFR+revUS*USD_TO_EUR+revSh*USD_TO_EUR;
+document.getElementById('dc-rev-total').textContent=revTotalEur.toFixed(2)+' €';
+document.getElementById('dc-rev-total-sub').textContent=revTotalEur>0?('soit '+(revTotalEur*30/Math.max(daysCompleted,1)).toFixed(0)+' €/mois si rythme maintenu'):'Somme pondérée par RPM';
+const bars=document.getElementById('dash-bars');if(bars){
+const maxViews=Math.max(1,...entries.map(([k,d])=>(d.tiktok_fr||0)+(d.tiktok_us||0)));
+let html='';
+for(let i=1;i<=30;i++){const d=state.dashboard[i]||{};const views=(d.tiktok_fr||0)+(d.tiktok_us||0);const h=views>0?Math.max(3,Math.round(views/maxViews*100)):2;let cls='dash-bar';if(views<=0)cls+=' empty';if(i===state.dashSelectedDay)cls+=' selected';html+='<div class="'+cls+'" data-day="'+i+'" style="height:'+h+'%" title="Jour '+i+' : '+views+' vues TikTok (cliquer pour saisir)"><span class="dash-bar-label">'+(i%5===0?i:'')+'</span></div>';}
+bars.innerHTML=html;
+bars.querySelectorAll('.dash-bar').forEach(el=>{el.addEventListener('click',()=>loadDashboardDay(parseInt(el.dataset.day,10)))});
+}
+const tbody=document.getElementById('dash-table-body');if(tbody){
+const rows=entries.slice().sort((a,b)=>a[0]-b[0]).map(([day,d])=>{const rev=(d.tiktok_fr||0)/1000*RPM.tiktok_fr+(d.tiktok_us||0)/1000*RPM.tiktok_us*USD_TO_EUR+(d.shorts||0)/1000*RPM.shorts*USD_TO_EUR;return'<tr><td class="day-cell">J'+day+'</td><td class="num">'+(d.tiktok_fr||0).toLocaleString('fr-FR')+'</td><td class="num">'+(d.tiktok_us||0).toLocaleString('fr-FR')+'</td><td class="num">'+(d.shorts||0).toLocaleString('fr-FR')+'</td><td class="num" style="color:var(--ok);">'+rev.toFixed(2)+' €</td></tr>';});
+if(rows.length===0){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--faint);padding:1.5rem;">Aucune donnée saisie.</td></tr>'}
+else{tbody.innerHTML=rows.join('')}
+const badge=document.getElementById('table-badge');if(badge)badge.textContent=daysCompleted+' jours actifs';
+}
+}
+
+function loadDashboardDay(day){
+state.dashSelectedDay=day;
+const d=state.dashboard[day]||{tiktok_fr:0,tiktok_us:0,shorts:0};
+document.getElementById('input-tiktok-fr').value=d.tiktok_fr||'';
+document.getElementById('input-tiktok-us').value=d.tiktok_us||'';
+document.getElementById('input-shorts').value=d.shorts||'';
+document.getElementById('input-badge').textContent='Jour '+day;
+document.querySelectorAll('#dash-bars .dash-bar').forEach(el=>{el.classList.toggle('selected',parseInt(el.dataset.day,10)===day)});
+debugLog('info','DASH','Jour '+day+' chargé');
+}
+
+function saveDashboardDay(){
+const day=state.dashSelectedDay;
+const fr=parseInt(document.getElementById('input-tiktok-fr').value,10)||0;
+const us=parseInt(document.getElementById('input-tiktok-us').value,10)||0;
+const sh=parseInt(document.getElementById('input-shorts').value,10)||0;
+if(fr+us+sh===0)delete state.dashboard[day];
+else state.dashboard[day]={tiktok_fr:fr,tiktok_us:us,shorts:sh};
+saveDashboard();renderDashboard();renderPlanner();
+showToast('Vues du jour '+day+' enregistrées','success');
+}
+
+let ttsVoice=null;
+function pickVoice(lang){if(!('speechSynthesis' in window))return null;const voices=window.speechSynthesis.getVoices();if(!voices||voices.length===0)return null;const filtered=voices.filter(v=>v.lang&&v.lang.toLowerCase().startsWith(lang));if(filtered.length===0)return null;return filtered.find(v=>/premium|enhanced|amelie|thomas|samantha|daniel/i.test(v.name))||filtered[0]}
+function initTTS(){if(!('speechSynthesis' in window))return;const update=()=>{ttsVoice=pickVoice(state.lang==='en'?'en':'fr')};update();window.speechSynthesis.onvoiceschanged=update}
+function speakText(text){if(!state.voiceEnabled)return;if(!('speechSynthesis' in window))return;if(!text)return;try{window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang=state.lang==='en'?'en-US':'fr-FR';u.rate=1.05;u.pitch=1.0;u.volume=1.0;if(ttsVoice)u.voice=ttsVoice;window.speechSynthesis.speak(u)}catch(e){}}
+function stopTTS(){try{if('speechSynthesis' in window)window.speechSynthesis.cancel()}catch(e){}}
+
+async function playFilm(){
+const ready=state.videos.filter(v=>v.status==='done'&&v.url);if(ready.length===0){showToast('Aucune vidéo','error');return}
+if(state.isPlayingFilm)return;state.isPlayingFilm=true;updateButtons();
+const overlay=document.getElementById('player-overlay');const canvas=document.getElementById('player-canvas');const hint=document.getElementById('player-hint-overlay');if(!overlay||!canvas)return;
+const dpr=Math.min(window.devicePixelRatio||1,2);const cssW=window.innerWidth;const cssH=window.innerHeight;canvas.width=Math.round(cssW*dpr);canvas.height=Math.round(cssH*dpr);canvas.style.width=cssW+'px';canvas.style.height=cssH+'px';const ctx=canvas.getContext('2d');
+overlay.classList.add('visible');hint.classList.remove('hidden');setTimeout(()=>hint.classList.add('hidden'),3000);
+try{if('speechSynthesis' in window){const u0=new SpeechSynthesisUtterance(' ');u0.volume=0;window.speechSynthesis.speak(u0)}}catch(e){}
+const script=state.script||{scenes:[]};const scenes=script.scenes||[];
+const readyWithScene=ready.map(v=>{const origIndex=state.videos.indexOf(v);return{video:v,scene:scenes[origIndex]||{}}});
+for(let i=0;i<readyWithScene.length;i++){if(!state.isPlayingFilm)break;await playOneScene(readyWithScene[i].video,readyWithScene[i].scene,ctx,canvas,dpr)}
+stopFilmPlayback();
+}
+function playOneScene(videoObj,scene,ctx,canvas,dpr){
+return new Promise((resolve)=>{
+const video=document.createElement('video');video.src=videoObj.url;video.playsInline=true;video.muted=true;let ttsFired=false;let finished=false;
+const finish=()=>{if(finished)return;finished=true;resolve()};
+const startTTS=()=>{if(ttsFired)return;ttsFired=true;const line=(scene.dialogue&&scene.dialogue.line_fr)||'';if(line)speakText(line)};
+const ttsGuard=setTimeout(()=>startTTS(),2000);
+const drawOverlay=(w,h)=>{const t=video.currentTime||0;const dur=video.duration||6;let alpha=1;if(t<0.4)alpha=t/0.4;else if(dur-t<0.5)alpha=Math.max(0,(dur-t)/0.5);if(alpha<=0)return;const pad=Math.round(Math.min(30*dpr,w*0.03));const bandH=Math.round(Math.min(90*dpr,h*0.15));const bandY=h-bandH-pad;const bandX=pad;const bandW=w-pad*2;ctx.save();ctx.globalAlpha=alpha;const grad=ctx.createLinearGradient(bandX,bandY,bandX,bandY+bandH);grad.addColorStop(0,'rgba(10,10,18,0)');grad.addColorStop(0.35,'rgba(10,10,18,0.85)');grad.addColorStop(1,'rgba(10,10,18,0.95)');ctx.fillStyle=grad;ctx.fillRect(bandX,bandY,bandW,bandH);ctx.fillStyle='#e5c15a';ctx.fillRect(bandX,bandY+Math.round(bandH*0.15),Math.round(5*dpr),bandH-Math.round(bandH*0.3));const speakerName=(scene.dialogue&&scene.dialogue.speaker)||'';const nameSize=Math.round(Math.min(14*dpr,h*0.021));const textSize=Math.round(Math.min(20*dpr,h*0.030));if(speakerName){ctx.fillStyle='#e5c15a';ctx.font='700 '+nameSize+'px -apple-system,sans-serif';ctx.textBaseline='top';ctx.fillText(speakerName.toUpperCase(),bandX+Math.round(bandH*0.22),bandY+Math.round(bandH*0.18))}const overlayText=scene.text_overlay_fr||(scene.dialogue&&scene.dialogue.line_fr)||'';if(overlayText){ctx.fillStyle='#f5f0e1';ctx.font='500 '+textSize+'px -apple-system,sans-serif';ctx.textBaseline='top';let txt=overlayText;const maxW=bandW-Math.round(bandH*0.4);while(ctx.measureText(txt).width>maxW&&txt.length>4){txt=txt.slice(0,-4)+'…'}ctx.fillText(txt,bandX+Math.round(bandH*0.22),bandY+Math.round(bandH*0.5))}ctx.restore()};
+const draw=()=>{ctx.fillStyle='#000';ctx.fillRect(0,0,canvas.width,canvas.height);const vw=video.videoWidth||720;const vh=video.videoHeight||1280;const ar=vw/vh;const car=canvas.width/canvas.height;let dw,dh,dx,dy;if(ar>car){dw=canvas.width;dh=canvas.width/ar;dx=0;dy=(canvas.height-dh)/2}else{dh=canvas.height;dw=canvas.height*ar;dx=(canvas.width-dw)/2;dy=0}try{ctx.drawImage(video,dx,dy,dw,dh)}catch(e){}drawOverlay(canvas.width,canvas.height)};
+const loop=()=>{if(!state.isPlayingFilm){clearTimeout(ttsGuard);finish();return}if(video.paused||video.ended){clearTimeout(ttsGuard);finish();return}draw();state.playRAF=requestAnimationFrame(loop)};
+video.onloadedmetadata=()=>{clearTimeout(ttsGuard);startTTS();video.play().then(()=>loop()).catch(()=>{startTTS();finish()})};
+video.onended=()=>{clearTimeout(ttsGuard);finish()};
+video.onerror=()=>{startTTS();clearTimeout(ttsGuard);finish()};
+video.load();
+});
+}
+function stopFilmPlayback(){state.isPlayingFilm=false;if(state.playRAF)cancelAnimationFrame(state.playRAF);state.playRAF=null;stopTTS();const overlay=document.getElementById('player-overlay');if(overlay)overlay.classList.remove('visible');updateButtons()}
+
+function updateFormPreview(){
+const el=document.getElementById('form-preview');if(!el)return;
+const langLabel=state.lang==='en'?'🇺🇸 English':'🇫🇷 Français';
+const totalDuration=(state.topics.length+2)*state.sceneDurationSec;
+const eligible=totalDuration>=60;
+el.innerHTML='<strong>'+esc(state.jtTitle)+'</strong><br>'+langLabel+' · '+state.topics.length+' sujets · '+state.selectedCharacters.length+' personnages · <strong>'+totalDuration+'s</strong> '+(eligible?'✓':'⚠️');
+updateMetrics();
+}
+
+(function init(){
+document.querySelectorAll('.tab').forEach(tab=>{
+tab.addEventListener('click',()=>{
+document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+tab.classList.add('active');
+document.getElementById('pane-'+tab.dataset.tab).classList.add('active');
+if(tab.dataset.tab==='dashboard')renderDashboard();
+if(tab.dataset.tab==='shorts'){document.getElementById('shorts-title-input').value=state.shortsTitle;document.getElementById('shorts-desc-input').value=state.shortsDesc;document.getElementById('shorts-theme').value=state.shortsTheme}
+});
+});
+
+document.getElementById('api-save-btn').addEventListener('click',saveKeysFromUI);
+document.getElementById('api-diag-btn').addEventListener('click',runApiDiagnostic);
+document.getElementById('api-keys-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();saveKeysFromUI()}});
+document.querySelectorAll('[data-toggle]').forEach(h=>{h.addEventListener('click',()=>{const el=document.getElementById(h.dataset.toggle);if(el)el.classList.toggle('open')})});
+
+document.querySelectorAll('#lang-toggle .lang-option').forEach(el=>{
+el.addEventListener('click',()=>{
+document.querySelectorAll('#lang-toggle .lang-option').forEach(x=>x.classList.remove('selected'));
+el.classList.add('selected');
+state.lang=el.dataset.lang;
+try{localStorage.setItem(LANG_STORAGE,state.lang)}catch(e){}
+initTTS();loadDay(state.currentDay);
+});
+});
+
+document.querySelectorAll('#shorts-lang-toggle .lang-option').forEach(el=>{
+el.addEventListener('click',()=>{
+document.querySelectorAll('#shorts-lang-toggle .lang-option').forEach(x=>x.classList.remove('selected'));
+el.classList.add('selected');
+state.shortsLang=el.dataset.lang;
+});
+});
+
+try{const savedLang=localStorage.getItem(LANG_STORAGE);if(savedLang){state.lang=savedLang;document.querySelectorAll('#lang-toggle .lang-option').forEach(el=>{el.classList.toggle('selected',el.dataset.lang===savedLang)})}}catch(e){}
+
+document.getElementById('jt-theme').addEventListener('change',e=>{state.jtTheme=e.target.value;updateFormPreview()});
+document.getElementById('jt-title-input').addEventListener('input',e=>{state.jtTitle=e.target.value;updateFormPreview()});
+document.getElementById('jt-topics-input').addEventListener('input',e=>{state.topics=e.target.value.split('\n').map(l=>l.trim()).filter(l=>l.length>0);updateFormPreview();updatePlannerInfo()});
+document.getElementById('jt-palette').addEventListener('change',e=>{state.palette=WA_PALETTES.find(p=>p.id===e.target.value)||WA_PALETTES[0];updateFormPreview()});
+document.getElementById('jt-scene-duration').addEventListener('change',e=>{state.sceneDurationSec=parseInt(e.target.value,10);updateFormPreview();updatePlannerInfo()});
+
+document.getElementById('shorts-theme').addEventListener('change',e=>{state.shortsTheme=e.target.value});
+document.getElementById('shorts-topics-input').addEventListener('input',e=>{state.shortsTopics=e.target.value.split('\n').map(l=>l.trim()).filter(l=>l.length>0)});
+document.getElementById('shorts-title-input').addEventListener('input',e=>{state.shortsTitle=e.target.value;renderShortsMeta()});
+document.getElementById('shorts-desc-input').addEventListener('input',e=>{state.shortsDesc=e.target.value;renderShortsMeta()});
+document.getElementById('shorts-scene-duration').addEventListener('change',e=>{state.shortsSceneDurationSec=parseInt(e.target.value,10)});
+
+document.getElementById('launch-btn').addEventListener('click',()=>runJT(state.lang));
+document.getElementById('launch-bilingual-btn').addEventListener('click',runBilingual);
+document.getElementById('stop-btn').addEventListener('click',()=>{state.stopRequested=true;stopTTS();setStatus('Arrêt en cours…')});
+document.getElementById('shorts-launch-btn').addEventListener('click',runShorts);
+document.getElementById('shorts-stop-btn').addEventListener('click',()=>{state.shortsStopRequested=true;setStatus('Arrêt en cours…')});
+
+document.getElementById('assemble-btn').addEventListener('click',()=>{
+assembleVideos(state.videos,document.getElementById('ass-status'),document.getElementById('ass-progress'),document.getElementById('ass-download'),document.getElementById('ass-download-link'),'jt-chatons-ep'+state.currentDay+'-'+((state.script&&state.script.language)||state.lang),(state.script&&state.script.scenes)||[],(state.script&&state.script.language)||state.lang,'include-narration',state.sceneDurationSec);
+});
+document.getElementById('shorts-assemble-btn').addEventListener('click',()=>{
+assembleVideos(state.shortsVideos,document.getElementById('shorts-ass-status'),document.getElementById('shorts-ass-progress'),document.getElementById('shorts-ass-download'),document.getElementById('shorts-ass-download-link'),'shorts-'+((state.shortsScript&&state.shortsScript.language)||state.shortsLang),(state.shortsScript&&state.shortsScript.scenes)||[],(state.shortsScript&&state.shortsScript.language)||state.shortsLang,'shorts-include-narration',state.shortsSceneDurationSec);
+});
+
+document.getElementById('play-film-btn').addEventListener('click',playFilm);
+document.getElementById('replay-btn').addEventListener('click',playFilm);
+document.getElementById('player-overlay').addEventListener('click',stopFilmPlayback);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.isPlayingFilm)stopFilmPlayback()});
+document.getElementById('voice-toggle').addEventListener('change',e=>{state.voiceEnabled=e.target.checked;if(!state.voiceEnabled)stopTTS()});
+
+document.getElementById('save-views-btn').addEventListener('click',saveDashboardDay);
+document.getElementById('reset-dashboard-btn').addEventListener('click',()=>{
+if(!confirm('Réinitialiser toutes les données du dashboard ?'))return;
+state.dashboard={};saveDashboard();renderDashboard();loadDashboardDay(1);showToast('Dashboard réinitialisé','warn');
+});
+
+document.getElementById('debug-header').addEventListener('click',e=>{if(e.target.tagName==='BUTTON')return;toggleDebugCollapse()});
+document.getElementById('debug-collapse-btn').addEventListener('click',e=>{e.stopPropagation();toggleDebugCollapse()});
+document.getElementById('debug-clear-btn').addEventListener('click',e=>{e.stopPropagation();clearDebug()});
+document.getElementById('debug-copy-btn').addEventListener('click',e=>{e.stopPropagation();copyDebug()});
+
+const saved=loadPlannerState();
+state.completedDays=saved.completedDays||[];
+state.currentDay=saved.currentDay||1;
+state.palette=WA_PALETTES[0];
+state.dashboard=loadDashboard();
+state.shortsTopics=document.getElementById('shorts-topics-input').value.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
+
+refreshKeyPool();updateApiPanel();renderPlanner();loadDay(state.currentDay);initTTS();updateButtons();updateFormPreview();renderDashboard();loadDashboardDay(1);renderShortsMeta();setupNarrationOption();
+setInterval(renderKeysStatus,1000);
+
+debugLog('success','INIT','JT Chatons Studio prêt — modèle vidéo agnes-video-2.5-flash');
+debugLog('info','INIT','Modules : Studio 30j · FR+EN · Dashboard · YouTube Shorts');
+debugLog(BACKEND.proxy?'success':'warn','BACKEND',BACKEND.proxy?('Relais serveur sécurisé — clé côté serveur ('+BACKEND.keys+')'+(BACKEND.tts?' · TTS actif':' · TTS inactif')):'Mode direct navigateur — la clé API est exposée. Lance node server.mjs pour sécuriser.');
+debugLog('info','FFMPEG','Source modules : '+(window.__ffmpegSource||'inconnue')+(window.__ffmpegImportError?(' — erreur : '+window.__ffmpegImportError):''));
+
+// Hook de test interne : uniquement des fonctions pures de parsing (aucune clé).
+try{window.__jtTest={extractJson,normalizeScript,validateScript,sanitizeJsonText,closeJsonContainers,repairTruncatedJson,tryParseJson,parseJsonCandidate,extractScriptWithRepair};}catch(e){}
+
+// Utilitaires de debug vidéo — accessibles depuis la console du navigateur
+try{
+    window.__jtVideoDebug={
+        // Test création tâche vidéo
+        async testCreateVideo(prompt='test video', duration=4){
+            return await createVideoTask(prompt, null, duration);
+        },
+        // Test polling sur un video_id
+        async testPoll(videoId){
+            const ref={value:null};
+            return await pollVideo(videoId, (p)=>console.log('poll:',p), ref);
+        },
+        // Test endpoint /content
+        async testContent(videoId){
+            return await fetchVideoContentUrl(videoId);
+        },
+        // Test génération image
+        async testImage(prompt='test image'){
+            return await generateImage(prompt);
+        },
+        // Lister les modèles vidéo disponibles
+        async listVideoModels(){
+            const res=await apiFetch(API_BASE+'/models',{method:'GET'},'Models');
+            const data=await res.json();
+            return Array.isArray(data.data)?data.data:(Array.isArray(data.models)?data.models:[]);
+        }
+    };
+    console.log('🔧 JT Video Debug: window.__jtVideoDebug disponible');
+    console.log('   testCreateVideo(prompt, duration)');
+    console.log('   testPoll(videoId)');
+    console.log('   testContent(videoId)');
+    console.log('   testImage(prompt)');
+    console.log('   listVideoModels()');
+}catch(e){}
+})();
+</script>
+</body>
+</html> 
