@@ -2169,9 +2169,7 @@ renderVideosGeneric(state.videos,'videos-grid','videos-count');
 for(let i=0;i<scenes.length && !state.stopRequested;i++){
 const scene=scenes[i];
 await generateOneVideo(scene,i,state.script,state.lang,state.videos,'videos-grid','videos-count',0);
-if(i<scenes.length-1 && !state.stopRequested){
-await sleep(3000);
-}
+// Pas de sleep : generateOneVideo attend déjà pollVideo (vidéo terminée + URL récupérée)
 }
 if(state.stopRequested)state.videos.forEach(v=>{if(v.status==='pending'||v.status==='loading')v.status='stopped';});
 renderVideosGeneric(state.videos,'videos-grid','videos-count');
@@ -2339,9 +2337,7 @@ renderVideosGeneric(state.shortsVideos,'shorts-videos-grid','shorts-videos-count
 for(let i=0;i<scenes.length && !state.shortsStopRequested;i++){
 const scene=scenes[i];
 await generateOneShortsVideo(scene,i,0);
-if(i<scenes.length-1 && !state.shortsStopRequested){
-await sleep(3000);
-}
+// Pas de sleep : generateOneShortsVideo attend déjà pollVideo (vidéo terminée + URL récupérée)
 }
 if(state.shortsStopRequested)state.shortsVideos.forEach(v=>{if(v.status==='pending'||v.status==='loading')v.status='stopped';});
 renderVideosGeneric(state.shortsVideos,'shorts-videos-grid','shorts-videos-count');
