@@ -398,6 +398,17 @@ select option{background:var(--bg2);color:var(--ink)}
 <div class="ass-title">🎬 Assemblage MP4</div>
 <div class="ass-desc">Fusionne les scènes en un MP4 unique prêt pour TikTok ou YouTube Shorts.</div>
 <label class="ass-option" id="include-narration-label"><input type="checkbox" id="include-narration"> <span>🔊 Graver la narration TTS dans le MP4</span></label>
+
+<div style="margin:.8rem 0;padding:.8rem;background:rgba(100,200,255,.1);border:1px solid var(--acc);border-radius:.5rem;">
+<div style="font-weight:600;margin-bottom:.4rem;">📥 Import manuel Hailuo (MiniMax)</div>
+<div style="font-size:.7rem;color:var(--dim);margin-bottom:.5rem;">Générez 12×6s sur <a href="https://video.minimax.chat" target="_blank">hailuo.ai</a>, copiez les URLs MP4 (une par ligne), collez ici :</div>
+<textarea id="hailuo-urls-input" rows="4" placeholder="https://...mp4&#10;https://...mp4&#10;..." style="width:100%;font-size:.7rem;font-family:monospace;"></textarea>
+<div class="btn-row" style="margin-top:.5rem;">
+<button type="button" class="btn" id="hailuo-import-btn">⬇ Importer & charger dans les scènes</button>
+<button type="button" class="btn" id="hailuo-clear-btn">🗑 Vider</button>
+</div>
+</div>
+
 <div class="ass-status" id="ass-status"></div>
 <div class="ass-progress" id="ass-progress"><div class="ass-progress-fill" id="ass-progress-fill"></div></div>
 <button type="button" class="btn btn-assemble" id="assemble-btn" disabled>🎬 Assembler l'épisode</button>
@@ -953,6 +964,24 @@ const span=label.querySelector('span');
 if(span&&!BACKEND.tts)span.textContent='🔇 Narration TTS indisponible — lance server.mjs';
 }
 });
+}
+
+function importHailuoUrls(){
+const textarea=document.getElementById('hailuo-urls-input');
+if(!textarea){showToast('Zone import introuvable','error');return}
+const raw=textarea.value||'';
+const urls=raw.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0 && l.startsWith('http'));
+if(urls.length===0){showToast('Aucune URL valide (http/https)','warn');return}
+state.videos=[];
+urls.forEach((url,i)=>{
+state.videos.push({status:'done',url:url,type:'scene',progress:'Importé Hailuo',videoId:'hailuo-'+i});
+});
+renderVideosGeneric(state.videos,'videos-grid','videos-count');
+document.getElementById('section-videos').classList.remove('hidden');
+document.getElementById('section-videos').classList.add('open');
+document.getElementById('assembly-box').classList.remove('hidden');
+updateButtons();
+showToast(urls.length+' vidéo(s) Hailuo importée(s) ✓','success');
 }
 
 async function apiFetch(url,options,label,maxAttempts){
@@ -2561,6 +2590,8 @@ document.getElementById('shorts-stop-btn').addEventListener('click',()=>{state.s
 document.getElementById('assemble-btn').addEventListener('click',()=>{
 assembleVideos(state.videos,document.getElementById('ass-status'),document.getElementById('ass-progress'),document.getElementById('ass-download'),document.getElementById('ass-download-link'),'jt-chatons-ep'+state.currentDay+'-'+((state.script&&state.script.language)||state.lang),(state.script&&state.script.scenes)||[],(state.script&&state.script.language)||state.lang,'include-narration',state.sceneDurationSec);
 });
+document.getElementById('hailuo-import-btn').addEventListener('click',importHailuoUrls);
+document.getElementById('hailuo-clear-btn').addEventListener('click',()=>{document.getElementById('hailuo-urls-input').value='';showToast('Zone Hailuo vidée','info')});
 document.getElementById('shorts-assemble-btn').addEventListener('click',()=>{
 assembleVideos(state.shortsVideos,document.getElementById('shorts-ass-status'),document.getElementById('shorts-ass-progress'),document.getElementById('shorts-ass-download'),document.getElementById('shorts-ass-download-link'),'shorts-'+((state.shortsScript&&state.shortsScript.language)||state.shortsLang),(state.shortsScript&&state.shortsScript.scenes)||[],(state.shortsScript&&state.shortsScript.language)||state.shortsLang,'shorts-include-narration',state.shortsSceneDurationSec);
 });
