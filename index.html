@@ -401,6 +401,7 @@ select option{background:var(--bg2);color:var(--ink)}
 </div>
 </div>
 
+<div id="video-queue-status" style="margin:.8rem 0;padding:.8rem;background:rgba(0,0,0,.02);border:1px solid var(--border);border-radius:.5rem;"></div>
 <div class="videos-grid" id="videos-grid"></div>
 </div></div>
 </div>
@@ -715,10 +716,7 @@ const VIDEO_DEFAULTS = {
     n: 1
 };
 
-const VIDEO_FIRST_POLL_DELAY_SEC = 6;
-const VIDEO_POLL_INTERVALS = [2, 2, 3, 3, 4, 5, 5];
-const VIDEO_MAX_POLL_ATTEMPTS = 300;
-const VIDEO_INTER_SCENE_DELAY_SEC = 15; // délai entre scènes pour laisser Agnes libérer la queue
+const VIDEO_INTER_SCENE_DELAY_SEC = 15; // délai entre scènes pour laisser Agnes libérer la queue (fallback legacy)
 
 const KEYS_STORAGE = 'jt_chatons_studio_keys_v1';
 const PLANNER_STORAGE = 'jt_chatons_planner_v2';
@@ -798,6 +796,51 @@ const state = {
   shortsAssembledBlobUrl: null
 };
 
+// ═════════════════════════════════════════════════════════════════════
+// FILE D'ATTENTE VIDÉO ROBUSTE (backoff exponentiel + reprise)
+// ═════════════════════════════════════════════════════════════════════
+const VIDEO_QUEUE_BACKOFF_MIN = [3, 6, 12, 24, 48, 96]; // minutes
+const VIDEO_QUEUE_MAX_POLL_ATTEMPTS = 300;
+const VIDEO_FIRST_POLL_DELAY_SEC = 6;
+const VIDEO_POLL_INTERVALS = [2, 2, 3, 3, 4, 5, 5];
+
+let videoQueue = {
+  step: 0,
+  next: 0,
+  st: 'idle',     // 'idle' | 'run' | 'full' | 'paused'
+  on: false,      // production active
+  busy: false     // lancement en cours
+};
+
+function saveVideoQueue() {
+  try { localStorage.setItem('jt_chatons_video_queue_v1', JSON.stringify(videoQueue)); } catch (e) {}
+}
+function loadVideoQueue() {
+  try {
+    const raw = localStorage.getItem('jt_chatons_video_queue_v1');
+    if (raw) { const q = JSON.parse(raw); Object.assign(videoQueue, q); }
+  } catch (e) {}
+}
+function fmtSec(s) { s = Math.max(0, Math.round(s)); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); }
+function qHtml(ok, left) {
+  const a = state.videos;
+  if (a.length && ok === a.length) return '<div class="guide" style="border-color:var(--ok);background:#effaf4"><b>🎉 Toutes les vidéos sont prêtes !</b> Cliquez sur « Prévisualiser » ou regardez chaque plan ci-dessous.</div>';
+  if (!videoQueue.on && videoQueue.st === 'idle' && !ok) return '<div class="guide"><b>Prêt à créer les vidéos.</b> Vos images de plans sont validées. 👉 Cliquez sur le bouton : tout se passe ensuite automatiquement.</div><div class="btn-row"><button class="btn btn-primary" id="qstart-btn">▶ Lancer la production des vidéos</button></div>';
+  if (!videoQueue.on) return '<div class="guide" style="border-color:var(--warn);background:#fff6f0"><b>Production en pause.</b> ' + ok + ' vidéo(s) prête(s), ' + left + ' restante(s).</div><div class="btn-row"><button class="btn btn-primary" id="qstart-btn">▶ Reprendre la production</button></div>';
+  if (videoQueue.st === 'full') return '<div class="guide" style="border-color:var(--warn);background:#fff6f0"><b>⏳ File d\'attente Agnes saturée.</b> Aucune requête n\'est envoyée pendant l\'attente. Prochain test dans <b id="q-cd" style="font:600 18px var(--fm)">' + fmtSec((videoQueue.next - Date.now())/1000) + '</b></div><div style="font-size:.7rem;color:var(--dim);margin:.5rem 0">Paliers d\'attente</div><div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.5rem">' + VIDEO_QUEUE_BACKOFF_MIN.map((m,i) => '<span style="padding:.15rem .5rem;border:1px solid ' + (i === videoQueue.step-1 ? 'var(--acc)' : i < videoQueue.step-1 ? 'var(--err)' : 'var(--border)') + ';border-radius:2px;background:' + (i === videoQueue.step-1 ? 'rgba(229,193,90,.1)' : i < videoQueue.step-1 ? 'rgba(200,90,74,.05)' : 'transparent') + ';color:' + (i === videoQueue.step-1 ? 'var(--acc)' : i < videoQueue.step-1 ? 'var(--err)' : 'var(--dim)') + ';font-family:var(--fm);font-size:.6rem">' + m + ' min</span>').join('') + '</div><div class="btn-row"><button class="btn" id="qnow-btn" style="background:var(--bg2);border-color:var(--acc);color:var(--acc)">Tester maintenant</button><button class="btn" id="qpause-btn" style="background:var(--bg2);border-color:var(--warn);color:var(--warn)">❚❚ Mettre en pause</button></div>';
+  return '<div class="guide" style="border-color:var(--blue);background:#eef6ff"><b>⚙ Production en cours.</b> Les vidéos sont envoyées à Agnes et apparaissent ci-dessous dès qu\'elles sont prêtes (' + ok + ' prête(s), ' + left + ' restante(s)).</div><div class="btn-row"><button class="btn" id="qpause-btn" style="background:var(--bg2);border-color:var(--warn);color:var(--warn)">❚❚ Mettre en pause</button></div>';
+}
+function refreshQueueUI() {
+  const e = document.getElementById('video-queue-status');
+  if (!e) return;
+  const a = state.videos;
+  const ok = a.filter(x => x.status === 'done' && x.url).length;
+  const left = a.filter(x => x.status !== 'done' && x.status !== 'error' && x.status !== 'stopped').length;
+  const sig = [videoQueue.st, videoQueue.on, videoQueue.step, ok, left, a.length].join('|');
+  if (e.dataset.sig !== sig) { e.dataset.sig = sig; e.innerHTML = qHtml(ok, left); }
+  const cd = document.getElementById('q-cd');
+  if (cd) cd.textContent = fmtSec((videoQueue.next - Date.now()) / 1000);
+}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 function setStatus(text){const b=document.getElementById('status-bar');const t=document.getElementById('status-text');if(!b||!t)return;if(text){b.classList.add('visible');t.textContent=text}else b.classList.remove('visible')}
@@ -2192,54 +2235,292 @@ const errors=state.videos.map((v,i)=>v.status==='error'?('Scène '+(i+1)+' : '+(
 return {ok,total:state.videos.length,errors};
 }
 
-async function generateAllVideosSequential(){
-const scenes=(state.script.scenes||[]).slice(0,state.topics.length+2);
-state.videos=[];
-for(let i=0;i<scenes.length;i++)state.videos.push({status:'pending',url:null,type:scenes[i].type||'scene',progress:'En attente…'});
-renderVideosGeneric(state.videos,'videos-grid','videos-count');
-for(let i=0;i<scenes.length && !state.stopRequested;i++){
-const scene=scenes[i];
-await generateOneVideo(scene,i,state.script,state.lang,state.videos,'videos-grid','videos-count',0);
-if(i<scenes.length-1 && !state.stopRequested){
-setStatus('Pause ' + VIDEO_INTER_SCENE_DELAY_SEC + 's — libération queue Agnes…');
-await sleep(VIDEO_INTER_SCENE_DELAY_SEC * 1000);
-}
-}
-if(state.stopRequested)state.videos.forEach(v=>{if(v.status==='pending'||v.status==='loading')v.status='stopped';});
-renderVideosGeneric(state.videos,'videos-grid','videos-count');
-const ok=state.videos.filter(v=>v.status==='done'&&v.url).length;
-const errors=state.videos.map((v,i)=>v.status==='error'?('Scène '+(i+1)+' : '+(v.error||'erreur inconnue')):null).filter(Boolean);
-return {ok,total:state.videos.length,errors};
+// ═════════════════════════════════════════════════════════════════════
+// FILE D'ATTENTE VIDÉO ROBUSTE — LANCEMENT / POLL / REPRISE
+// ═════════════════════════════════════════════════════════════════════
+
+async function acquireVideoKey() {
+  if (BACKEND.proxy) return null;
+  if (videoQueue.busy) { await sleep(200); return acquireVideoKey(); }
+  videoQueue.busy = true;
+  try {
+    while (true) {
+      if (state.stopRequested) throw new Error('Arrêt demandé');
+      const now = Date.now();
+      const active = state.keyPool.filter(k => k.active);
+      if (active.length === 0) throw new Error('Aucune clé API active');
+      const ready = active.filter(k => !k.cooldownUntil || k.cooldownUntil <= now);
+      if (ready.length > 0) {
+        ready.sort((a, b) => (a.lastUsed || 0) - (b.lastUsed || 0));
+        const k = ready[0];
+        k.lastUsed = Date.now();
+        return k;
+      }
+      const soonest = active.reduce((a, b) => (a.cooldownUntil || 0) < (b.cooldownUntil || 0) ? a : b);
+      await sleep(Math.max(1000, (soonest.cooldownUntil || 0) - now));
+    }
+  } finally {
+    videoQueue.busy = false;
+  }
 }
 
-async function videoWorker(workerId,queue,script,lang,videos,gridId,countId){
-while(queue.length>0&&!state.stopRequested){
-const task=queue.shift();if(!task)break;
-await generateOneVideo(task.scene,task.index,script,lang,videos,gridId,countId,workerId);
-}
+async function launchNextVideo() {
+  if (!videoQueue.on || state.stopRequested) return;
+  const pending = state.videos.find(v => v.status === 'pending' || v.status === 'queued');
+  if (!pending) {
+    videoQueue.on = false;
+    videoQueue.st = 'idle';
+    saveVideoQueue();
+    refreshQueueUI();
+    return;
+  }
+  const idx = state.videos.indexOf(pending);
+  const scene = state.script.scenes[idx];
+  pending.status = 'loading';
+  pending.progress = 'Envoi…';
+  renderVideosGeneric(state.videos, 'videos-grid', 'videos-count');
+  try {
+    const key = await acquireVideoKey();
+    const prompt = buildVideoPrompt(scene, state.script, state.lang);
+    const videoIdObj = await createVideoTaskWithFallback(prompt, scene, state.sceneDurationSec);
+    const videoId = videoIdObj.compositeId;
+    pending.videoId = videoId;
+    pending.status = 'queued';
+    pending.progress = "En file d'attente…";
+    renderVideosGeneric(state.videos, 'videos-grid', 'videos-count');
+    const ref = { value: state.workingPollUrlBuilder };
+    const videoUrl = await pollVideoWithQueue(videoId, (prog) => { pending.progress = prog; renderVideosGeneric(state.videos, 'videos-grid', 'videos-count'); }, ref);
+    state.workingPollUrlBuilder = ref.value;
+    pending.status = 'done';
+    pending.url = videoUrl;
+    pending.progress = 'Terminé';
+    renderVideosGeneric(state.videos, 'videos-grid', 'videos-count');
+    saveVideoQueue();
+    refreshQueueUI();
+    setTimeout(launchNextVideo, 0);
+  } catch (e) {
+    if (e.message === 'Arrêt demandé') return;
+    if (e.status === 503 || /queue_full|saturated|saturée/i.test(e.message || '')) {
+      videoQueue.st = 'full';
+      const mins = VIDEO_QUEUE_BACKOFF_MIN[videoQueue.step] || VIDEO_QUEUE_BACKOFF_MIN[VIDEO_QUEUE_BACKOFF_MIN.length - 1];
+      videoQueue.next = Date.now() + mins * 60 * 1000;
+      videoQueue.step = Math.min(videoQueue.step + 1, VIDEO_QUEUE_BACKOFF_MIN.length - 1);
+      pending.status = 'pending';
+      pending.progress = 'En attente (file saturée)…';
+      debugLog('warn', 'VIDEO-QUEUE', 'File Agnes saturée — backoff ' + mins + ' min (palier ' + videoQueue.step + '/' + VIDEO_QUEUE_BACKOFF_MIN.length + ')');
+    } else if (e.status === 429 || /rate.limit|too.many/i.test(e.message || '')) {
+      videoQueue.st = 'full';
+      videoQueue.next = Date.now() + 60 * 1000;
+      pending.status = 'pending';
+      pending.progress = 'Rate limit — attente 1 min…';
+      debugLog('warn', 'VIDEO-QUEUE', 'Rate limit — backoff 1 min');
+    } else {
+      pending.status = 'error';
+      pending.error = e.message;
+      debugLog('error', 'VIDEO', 'Scène ' + (idx + 1) + ' : ' + e.message);
+    }
+    renderVideosGeneric(state.videos, 'videos-grid', 'videos-count');
+    saveVideoQueue();
+    refreshQueueUI();
+    if (videoQueue.on && videoQueue.st !== 'full') {
+      setTimeout(launchNextVideo, 2000);
+    }
+  }
 }
 
-async function generateOneVideo(scene,index,script,lang,videos,gridId,countId,workerId){
-if(state.stopRequested)return;
-const prompt=buildVideoPrompt(scene,script,lang);
-videos[index].status='loading';videos[index].progress='Envoi…';
-renderVideosGeneric(videos,gridId,countId);
-try{
-const ref={value:state.workingPollUrlBuilder};
-let videoId=null;
-const videoIdObj=await createVideoTaskWithFallback(prompt,scene,state.sceneDurationSec);
-videoId=videoIdObj.compositeId;videos[index].videoId=videoId;
-const videoUrl=await pollVideo(videoId,(prog)=>{videos[index].progress=prog;renderVideosGeneric(videos,gridId,countId)},ref);
-state.workingPollUrlBuilder=ref.value;
-videos[index]={status:'done',url:videoUrl,type:scene.type||'scene',videoId:videoId};renderVideosGeneric(videos,gridId,countId);
-}catch(e){
-if(e.message==='Arrêt demandé')return;
-debugLog('error','VIDEO','Scène '+(index+1)+' : '+e.message);
-videos[index]={status:'error',url:null,type:scene.type||'scene',error:e.message,videoId:videos[index].videoId||null};renderVideosGeneric(videos,gridId,countId);
-}
+async function pollVideoWithQueue(videoId, onProgress, workingBuilderRef) {
+  const progress = (typeof onProgress === 'function') ? onProgress : () => {};
+
+  let rem = VIDEO_FIRST_POLL_DELAY_SEC;
+  while (rem > 0) {
+    if (state.stopRequested || state.shortsStopRequested) throw new Error('Arrêt demandé');
+    if (!videoQueue.on) throw new Error('Arrêt demandé');
+    progress('Préparation — ' + rem + 's');
+    await sleep(1000);
+    rem--;
+  }
+
+  const builders = workingBuilderRef.value
+    ? [workingBuilderRef.value, ...POLL_URL_BUILDERS.filter(b => b !== workingBuilderRef.value)]
+    : POLL_URL_BUILDERS;
+
+  for (let attempt = 0; attempt < VIDEO_QUEUE_MAX_POLL_ATTEMPTS; attempt++) {
+    if (state.stopRequested || state.shortsStopRequested) throw new Error('Arrêt demandé');
+    if (!videoQueue.on) throw new Error('Arrêt demandé');
+
+    if (attempt > 0) {
+      const idx = Math.min(attempt - 1, VIDEO_POLL_INTERVALS.length - 1);
+      let r = VIDEO_POLL_INTERVALS[idx];
+      while (r > 0) {
+        if (state.stopRequested || state.shortsStopRequested) throw new Error('Arrêt demandé');
+        if (!videoQueue.on) throw new Error('Arrêt demandé');
+        progress('Création — ' + r + 's');
+        await sleep(1000);
+        r--;
+      }
+    }
+
+    for (const builder of builders) {
+      try {
+        const res = await apiFetch(builder.build(videoId), { method: 'GET' }, 'Polling', 2);
+        const rawText = await res.text();
+        let d = null;
+        try {
+          d = JSON.parse(rawText);
+        } catch (e) {
+          debugLog('warn', 'POLL-RAW', builder.name + ' : réponse non JSON', rawText.slice(0, 2000));
+          continue;
+        }
+        const nested = (d && d.data && typeof d.data === 'object' && !Array.isArray(d.data)) ? d.data : null;
+        const status = String(d.status || (nested && nested.status) || d.state || (nested && nested.state) || '').toLowerCase();
+        const pct = Number(d.progress ?? (nested && nested.progress) ?? 0) || 0;
+        const errorObj = d.error || (nested && nested.error);
+        const errorMessage = typeof errorObj === 'string'
+          ? errorObj
+          : (errorObj && (errorObj.message || errorObj.msg)) || d.message || (nested && nested.message) || '';
+        const videoUrl = d.url || (nested && nested.url) || d.video_url || (nested && nested.video_url) ||
+          (d.output && d.output.url) || (nested && nested.output && nested.output.url) ||
+          (d.metadata && d.metadata.url) || (nested && nested.metadata && nested.metadata.url) ||
+          (d.result && d.result.url) || (nested && nested.result && nested.result.url) ||
+          (d.download_url) || (nested && nested.download_url) ||
+          (d.file && d.file.url) || (nested && nested.file && nested.file.url);
+
+        const recognized = !!(status || videoUrl || pct > 0 || d.video_id || (nested && nested.video_id) || d.task_id || d.id || d.object === 'video');
+        if (recognized) workingBuilderRef.value = builder;
+
+        if (status || pct || videoUrl) {
+          progress(status ? ('Statut : ' + status + (pct ? ' — ' + pct + '%' : '')) : ('Création — ' + pct + '%'));
+        }
+
+        if (videoUrl && (!status || COMPLETED_STATUSES.includes(status))) {
+          debugLog('info', 'POLL-RAW', 'Vidéo terminée — réponse brute (URL=' + videoUrl.slice(0, 120) + '…)', rawText.slice(0, 3000));
+          debugLog('success', 'VIDEO', 'Vidéo terminée : ' + videoId);
+          return videoUrl;
+        }
+
+        if (COMPLETED_STATUSES.includes(status)) {
+          debugLog('warn', 'POLL-RAW', 'Vidéo terminée sans URL — réponse brute', rawText.slice(0, 3000));
+          try {
+            return await fetchVideoContentUrl(videoId);
+          } catch (e) {
+            throw new Error('Vidéo terminée mais URL absente (fallback contenu : ' + e.message + ')');
+          }
+        }
+
+        if (FAILED_STATUSES.includes(status)) {
+          debugLog('error', 'POLL-RAW', 'Échec vidéo (' + status + ')', rawText.slice(0, 3000));
+          throw new Error('Échec vidéo (' + status + ') : ' + (errorMessage || 'raison inconnue'));
+        }
+
+        if (res.status === 503 || /queue_full|saturated|saturée/i.test(rawText)) {
+          throw new Error('queue_full: ' + rawText.slice(0, 200));
+        }
+
+        break;
+      } catch (e) {
+        if (e.message === 'Arrêt demandé') throw e;
+        if (e.message && (e.message.startsWith('Échec vidéo') || e.message.startsWith('Vidéo terminée') || e.message.startsWith('queue_full'))) throw e;
+        if (e.status === 401 || e.status === 403) throw e;
+        debugLog('warn', 'POLL', builder.name + ' : ' + (e.message || 'erreur') + ' — builder suivant');
+        continue;
+      }
+    }
+  }
+  throw new Error('Délai maximal dépassé pour la vidéo ' + videoId + ' (essayé ' + VIDEO_QUEUE_MAX_POLL_ATTEMPTS + ' fois)');
 }
 
-async function runBilingual(){
+// Processeur périodique de la file (reprise auto après backoff)
+setInterval(() => {
+  if (!videoQueue.on || state.stopRequested) return;
+  if (videoQueue.st === 'full' && Date.now() >= videoQueue.next) {
+    videoQueue.st = 'run';
+    videoQueue.step = 0;
+    saveVideoQueue();
+    refreshQueueUI();
+    debugLog('info', 'VIDEO-QUEUE', 'Fin de backoff — reprise production');
+    launchNextVideo();
+  }
+}, 10000);
+
+// Wake lock pour garder l'écran allumé pendant la génération
+let wakeLock = null;
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      debugLog('info', 'WAKELOCK', 'Wake lock activé');
+    }
+  } catch (e) { debugLog('warn', 'WAKELOCK', 'Wake lock indisponible : ' + e.message); }
+}
+function releaseWakeLock() {
+  if (wakeLock) { wakeLock.release().then(() => { wakeLock = null; debugLog('info', 'WAKELOCK', 'Wake lock relâché'); }).catch(() => {}); }
+}
+
+// ═════════════════════════════════════════════════════════════════════
+// NOUVELLE FONCTION generateAllVideosSequential (utilise la file robuste)
+// ═════════════════════════════════════════════════════════════════════
+
+async function generateAllVideosSequential() {
+  const scenes = (state.script.scenes || []).slice(0, state.topics.length + 2);
+  state.videos = [];
+  for (let i = 0; i < scenes.length; i++) state.videos.push({ status: 'pending', url: null, type: scenes[i].type || 'scene', progress: 'En attente…' });
+  renderVideosGeneric(state.videos, 'videos-grid', 'videos-count');
+  refreshQueueUI();
+
+  videoQueue = { step: 0, next: 0, st: 'run', on: true, busy: false };
+  saveVideoQueue();
+  refreshQueueUI();
+  await requestWakeLock();
+
+  debugLog('info', 'VIDEO-QUEUE', 'Démarrage production ' + scenes.length + ' vidéos');
+  launchNextVideo();
+
+  while (videoQueue.on && !state.stopRequested) {
+    await sleep(500);
+    refreshQueueUI();
+  }
+
+  releaseWakeLock();
+
+  if (state.stopRequested) state.videos.forEach(v => { if (v.status === 'pending' || v.status === 'loading' || v.status === 'queued') v.status = 'stopped'; });
+  renderVideosGeneric(state.videos, 'videos-grid', 'videos-count');
+  saveVideoQueue();
+  refreshQueueUI();
+  const ok = state.videos.filter(v => v.status === 'done' && v.url).length;
+  const errors = state.videos.map((v, i) => v.status === 'error' ? ('Scène ' + (i + 1) + ' : ' + (v.error || 'erreur inconnue')) : null).filter(Boolean);
+  return { ok, total: state.videos.length, errors };
+}
+
+// ═════════════════════════════════════════════════════════════════════
+// UI QUEUE — Gestion des boutons (délegation)
+// ═════════════════════════════════════════════════════════════════════
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('button');
+  if (!t) return;
+  if (t.id === 'qstart-btn') {
+    if (!videoQueue.on) {
+      videoQueue.on = true;
+      videoQueue.st = 'run';
+      saveVideoQueue();
+      refreshQueueUI();
+      launchNextVideo();
+    }
+  }
+  if (t.id === 'qpause-btn') {
+    videoQueue.on = false;
+    videoQueue.st = 'paused';
+    saveVideoQueue();
+    refreshQueueUI();
+  }
+  if (t.id === 'qnow-btn') {
+    videoQueue.next = 0;
+    videoQueue.step = 0;
+    videoQueue.st = 'run';
+    saveVideoQueue();
+    refreshQueueUI();
+    launchNextVideo();
+  }
+});async function runBilingual(){
 if(state.isRunning)return;
 if(!hasActiveKey()){showToast('Ajoutez au moins une clé API','error');return}
 if(state.selectedCharacters.length===0){showToast('Sélectionne au moins un personnage','error');return}
@@ -2621,7 +2902,8 @@ state.palette=WA_PALETTES[0];
 state.dashboard=loadDashboard();
 state.shortsTopics=document.getElementById('shorts-topics-input').value.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
 
-refreshKeyPool();updateApiPanel();renderPlanner();loadDay(state.currentDay);initTTS();updateButtons();updateFormPreview();renderDashboard();loadDashboardDay(1);renderShortsMeta();setupNarrationOption();
+loadVideoQueue();
+refreshKeyPool();updateApiPanel();renderPlanner();loadDay(state.currentDay);initTTS();updateButtons();updateFormPreview();renderDashboard();loadDashboardDay(1);renderShortsMeta();setupNarrationOption();refreshQueueUI();
 setInterval(renderKeysStatus,1000);
 
 debugLog('success','INIT','JT Chatons Studio prêt — modèle vidéo agnes-video-2.5-flash');
